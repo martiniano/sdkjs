@@ -4495,6 +4495,8 @@ function parserFormula( formula, parent, _ws ) {
 	this.parent = parent;
 	this._index = undefined;
 
+	this.ref = null;
+
 	if (AscFonts.IsCheckSymbols) {
 		AscFonts.FontPickerByCharacter.getFontsByString(this.Formula);
 	}
@@ -4632,6 +4634,7 @@ parserFormula.prototype.clone = function(formula, parent, ws) {
     }
     }
   oRes.isParsed = this.isParsed;
+  oRes.ref = this.ref;
   return oRes;
 };
 	parserFormula.prototype.getParent = function() {
