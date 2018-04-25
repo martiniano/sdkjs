@@ -336,7 +336,7 @@
 			t.isOpened = false;
 
 			t._formula = null;
-			this._parseResult = null;
+			t._parseResult = null;
 
 			if (!window['IS_NATIVE_EDITOR']) {
 				if (window.removeEventListener) {
