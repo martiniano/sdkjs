@@ -328,9 +328,8 @@
 				t.handlers.trigger('setStrictClose', true);
 				if(callback) {
 					callback(false);
-				} else {
-					return false;
 				}
+				return false;
 			}
 
 			t.isOpened = false;
