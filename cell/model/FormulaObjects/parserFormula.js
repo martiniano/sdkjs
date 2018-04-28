@@ -6257,6 +6257,19 @@ parserFormula.prototype.setFormula = function(formula) {
 		}
 		return true;
 	};
+	parserFormula.prototype.getArrayFormulaRef = function(cell) {
+		return this.ref;
+	};
+	parserFormula.prototype.checkFirstCellArray = function(cell) {
+		//возвращаем ТОЛЬКО главную ячейку
+		var res = null;
+		if(this.ref) {
+			if(this.parent && cell.nCol === this.parent.nCol && cell.nRow === this.parent.nRow) {
+				res = true;
+			}
+		}
+		return res;
+	};
 
 	function CalcRecursion() {
 		this.level = 0;
