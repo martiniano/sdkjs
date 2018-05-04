@@ -62,6 +62,7 @@
 	var UndoRedoData_BBox = AscCommonExcel.UndoRedoData_BBox;
 	var UndoRedoData_SheetAdd = AscCommonExcel.UndoRedoData_SheetAdd;
 	var UndoRedoData_DefinedNames = AscCommonExcel.UndoRedoData_DefinedNames;
+	var UndoRedoData_ArrayFormula = AscCommonExcel.UndoRedoData_ArrayFormula;
 	var g_oDefaultFormat = AscCommonExcel.g_oDefaultFormat;
 	var g_StyleCache = AscCommonExcel.g_StyleCache;
 	var Border = AscCommonExcel.Border;
@@ -6495,6 +6496,7 @@
 			bIsTextFormat = numFormat.isTextFormat();
 		}
 
+		var isFirstArrayFormulaCell = byRef && this.nCol === byRef.c1 && this.nRow === byRef.r1;
 		var newFP = null;
 		if (false == bIsTextFormat) {
 			/*
@@ -6503,7 +6505,7 @@
 			 */
 			if (null != val && val[0] == "=" && val.length > 1) {
 				//***array-formula***
-				if(byRef && (this.nCol !== byRef.c1 || this.nRow !== byRef.r1)) {
+				if(byRef && !isFirstArrayFormulaCell) {
 					newFP = this.ws.formulaArrayLink;
 					if(this.nCol === byRef.c2 && this.nRow === byRef.r2) {
 						this.ws.formulaArrayLink = null;
