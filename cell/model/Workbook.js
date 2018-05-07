@@ -3105,7 +3105,6 @@
 		//***array-formula***
 		//TODO пересмотреть. нужно для того, чтобы хранить ссылку на parserFormula главной ячейки при проходе по range массива
 		this.formulaArrayLink = null;
-		//***array-formula***
 
 		this.lastFindOptions = null;
 
@@ -3854,6 +3853,7 @@
 	Worksheet.prototype._updateFormulasParents = function(r1, c1, r2, c2, bbox, offset, shiftedShared) {
 		var t = this;
 		var cellWithFormula;
+		var shiftedArrayFormula = {};
 		this.getRange3(r1, c1, r2, c2)._foreachNoEmpty(function(cell){
 			var newNRow = cell.nRow + offset.row;
 			var newNCol = cell.nCol + offset.col;
@@ -3892,9 +3892,12 @@
 					}
 				} else if(arrayFormula) {
 					//***array-formula***
-					if(cell.nRow === arrayFormula.r1 && cell.nCol === arrayFormula.c1) {
+					if(!shiftedArrayFormula[parsed.getListenerId()] && cell.nRow === arrayFormula.r1 && cell.nCol === arrayFormula.c1) {
+						shiftedArrayFormula[parsed.getListenerId()] = 1;
 						parsed.ref = arrayFormula.clone();
 						parsed.ref.setOffset(offset);
+					} else {
+						processed = c_oSharedShiftType.Processed;
 					}
 				}
 
@@ -3906,10 +3909,10 @@
 					}
 
 					cellWithFormula = parsed.getParent();
-				cellWithFormula.nRow = newNRow;
-				cellWithFormula.nCol = newNCol;
-				t.workbook.dependencyFormulas.addToChangedCell(cellWithFormula);
-			}
+					cellWithFormula.nRow = newNRow;
+					cellWithFormula.nCol = newNCol;
+					t.workbook.dependencyFormulas.addToChangedCell(cellWithFormula);
+				}
 			}
 			if (newNRow >= t.nRowsCount) {
 				t.nRowsCount = newNRow + 1;
@@ -6518,7 +6521,6 @@
 					if(this.nCol === byRef.c2 && this.nRow === byRef.r2) {
 						this.ws.formulaArrayLink = null;
 					}
-					//***array-formula***
 				} else {
 					var cellWithFormula = new CCellWithFormula(this.ws, this.nRow, this.nCol);
 					newFP = new parserFormula(val.substring(1), cellWithFormula, this.ws);
@@ -6549,7 +6551,6 @@
 							newFP.ref = byRef;
 							this.ws.formulaArrayLink = newFP;
 						}
-						//***array-formula***
 					}
 				}
 			}
