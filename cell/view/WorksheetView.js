@@ -11375,6 +11375,23 @@
 			History.StartTransaction();
 		}
 
+		//***array-formula***
+		var changeRangesIfArrayFormula = function() {
+			if(flags.bApplyByArray) {
+				c = t.getSelectedRange();
+				if(c.bbox.isOneCell()) {
+					//проверяем, есть ли формула массива в этой ячейке
+					t.model._getCell(c.bbox.r1, c.bbox.c1, function(cell){
+						var formulaRef = cell && cell.formulaParsed && cell.formulaParsed.ref ? cell.formulaParsed.ref : null;
+						if(formulaRef) {
+							c = t.model.getRange3(formulaRef.r1, formulaRef.c1, formulaRef.r2, formulaRef.c2);
+						}
+					});
+				}
+				bbox = c.bbox;
+			}
+		};
+
 		var oAutoExpansionTable;
 		var isFormula = this._isFormula(val);
 		if (isFormula) {
@@ -11385,19 +11402,7 @@
 			// ToDo - при вводе формулы в заголовок автофильтра надо писать "0"
 			//***array-formula***
 			var ret = true;
-			if(flags.bApplyByArray) {
-				c = this.getSelectedRange();
-				if(c.bbox.isOneCell()) {
-					//проверяем, есть ли формула массива в этой ячейке
-					this.model._getCell(c.bbox.r1, c.bbox.c1, function(cell){
-						var formulaRef = cell && cell.formulaParsed && cell.formulaParsed.ref ? cell.formulaParsed.ref : null;
-						if(formulaRef) {
-							c = t.model.getRange3(formulaRef.r1, formulaRef.c1, formulaRef.r2, formulaRef.c2);
-						}
-					});
-				}
-				bbox = c.bbox;
-			}
+			changeRangesIfArrayFormula();
 
 			c.setValue(ftext, function (r) {
 				ret = r;
@@ -11417,10 +11422,7 @@
 			this.model.autoFilters.renameTableColumn(bbox);
 		} else {
 			//***array-formula***
-			if(flags.bApplyByArray) {
-				c = this.getSelectedRange();
-				bbox = c.bbox;
-			}
+			changeRangesIfArrayFormula();
 			c.setValue2(val);
 
 			// Вызываем функцию пересчета для заголовков форматированной таблицы
@@ -11605,7 +11607,7 @@
 						//проверяем activeCell на наличие форулы массива
 						var activeCell = t.model.selectionRange.activeCell;
 						t.model._getCell(activeCell.row, activeCell.col, function(cell) {
-							ref = cell.formulaParsed && cell.formulaParsed.ref ? cell.formulaPsetFormulaInternalarsed.ref : null;
+							ref = cell.formulaParsed && cell.formulaParsed.ref ? cell.formulaParsed.ref : null;
 						});
 						if(ref && !ref.isOneCell()) {
 							t.handlers.trigger("onErrorEvent", c_oAscError.ID.CannotChangeFormulaArray, c_oAscError.Level.NoCritical);
