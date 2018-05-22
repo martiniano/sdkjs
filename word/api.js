@@ -1787,6 +1787,7 @@ background-repeat: no-repeat;\
 	asc_docs_api.prototype.select_Element = function(Index)
 	{
 		var Document = this.WordControl.m_oLogicDocument;
+		console.log(Document);
 
 		if (true === Document.Selection.Use)
 			Document.RemoveSelection();
@@ -8968,6 +8969,60 @@ background-repeat: no-repeat;\
 		return editor.asc_Save(false);
 	};
 
+	asc_docs_api.prototype.get_InputedTextNuclearis = function()
+	{
+		var Doc    = this.WordControl.m_oLogicDocument;
+
+		var paraRun = Doc.Get_DocumentPositionInfoForCollaborative()
+
+		if(paraRun.Class.Content && paraRun.Position > 1){
+			var lastParaContent = paraRun.Class.Content[paraRun.Position - 1];
+			var lastButOneParaContent = paraRun.Class.Content[paraRun.Position - 2];
+			if(lastParaContent.Type == para_Space && lastButOneParaContent.Type == para_Text){
+				var pos = paraRun.Position - 2;
+				for(; pos >= 0;pos--){
+					if(paraRun.Class.Content[pos].Type == para_Text){
+						continue;
+					}else{
+						break;
+					}
+				}
+
+				pos++;
+
+				paraRun.Class.Selection.star
+
+				paraRun.Class.Selection.Use   = true;
+				paraRun.Class.Selection.Start = false;
+				paraRun.Class.Selection.Flag  = AscCommon.selectionflag_Common;
+		
+				paraRun.Class.Selection.StartPos = pos;
+				paraRun.Class.Selection.EndPos   = paraRun.Position - 1;
+
+				var selectedText = Doc.GetSelectedText();
+				
+				if(selectedText){
+					var list = {
+							'amr': 'Anderson Martiniano da Rocha',
+							'bb': 'Banco do Brasil',
+							'VV': 'Vinicius é Viado!' 
+					};
+
+					if(list[selectedText]){
+						paraRun.Class.Remove_FromContent(pos, selectedText.length, true);
+						paraRun.Class.AddText(list[selectedText], pos);
+						this.WordControl.m_oLogicDocument.Recalculate();
+						paraRun.Class.Paragraph.Document_SetThisElementCurrent(true);
+						//paraRun.Class.MoveCursorToEndPos(false);
+						paraRun.Class.State.ContentPos = (pos + list[selectedText].length + 1);
+					}
+				}
+
+				paraRun.Class.RemoveSelection();
+			}
+		}
+	};
+
 	//-------------------------------------------------------------export---------------------------------------------------
 	window['Asc']                                                       = window['Asc'] || {};
 	CAscSection.prototype['get_PageWidth']                              = CAscSection.prototype.get_PageWidth;
@@ -9540,6 +9595,8 @@ background-repeat: no-repeat;\
 	// passwords
 	asc_docs_api.prototype["asc_setCurrentPassword"] 					= asc_docs_api.prototype.asc_setCurrentPassword;
 	asc_docs_api.prototype["asc_resetPassword"] 						= asc_docs_api.prototype.asc_resetPassword;
+
+	asc_docs_api.prototype["get_InputedTextNuclearis"] 						= asc_docs_api.prototype.get_InputedTextNuclearis;	
 
 	CDocInfoProp.prototype['get_PageCount']             = CDocInfoProp.prototype.get_PageCount;
 	CDocInfoProp.prototype['put_PageCount']             = CDocInfoProp.prototype.put_PageCount;
