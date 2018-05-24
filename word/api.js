@@ -8971,6 +8971,18 @@ background-repeat: no-repeat;\
 
 	asc_docs_api.prototype.get_InputedTextNuclearis = function()
 	{
+		var mainController;
+		try { mainController = DE.getController('Main'); } catch(e) {
+			 try { mainController = PE.getController('Main'); } catch(e) {
+				 try { mainController =  SSE.getController('Main'); } catch(e) {}
+			 }
+		}
+
+		var atalhos = {};
+		if(mainController && mainController.editorConfig && mainController.editorConfig.atalhos){
+			atalhos = mainController.editorConfig.atalhos;		
+		}
+		
 		var Doc    = this.WordControl.m_oLogicDocument;
 
 		var paraRun = Doc.Get_DocumentPositionInfoForCollaborative()
@@ -9002,19 +9014,13 @@ background-repeat: no-repeat;\
 				var selectedText = Doc.GetSelectedText();
 				
 				if(selectedText){
-					var list = {
-							'amr': 'Anderson Martiniano da Rocha',
-							'bb': 'Banco do Brasil',
-							'VV': 'Vinicius é Viado!' 
-					};
-
-					if(list[selectedText]){
+					if(atalhos[selectedText]){
 						paraRun.Class.Remove_FromContent(pos, selectedText.length, true);
-						paraRun.Class.AddText(list[selectedText], pos);
+						paraRun.Class.AddText(atalhos[selectedText], pos);
 						this.WordControl.m_oLogicDocument.Recalculate();
 						paraRun.Class.Paragraph.Document_SetThisElementCurrent(true);
 						//paraRun.Class.MoveCursorToEndPos(false);
-						paraRun.Class.State.ContentPos = (pos + list[selectedText].length + 1);
+						paraRun.Class.State.ContentPos = (pos + atalhos[selectedText].length + 1);
 					}
 				}
 
