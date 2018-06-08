@@ -604,7 +604,7 @@
 				return;
 			}
 
-			this.sync_StartAction(c_oAscAsyncActionType.Information, c_oAscAsyncAction.Save);
+			this.sync_StartAction(c_oAscAsyncActionType.BlockInteraction, c_oAscAsyncAction.Save);
 
 			this.canUnlockDocument2 = this.canUnlockDocument;
 			if (this.canUnlockDocument && this.canStartCoAuthoring) {

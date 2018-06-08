@@ -2284,7 +2284,7 @@ background-repeat: no-repeat;\
 			t.canSave    = true;
 			t.IsUserSave = false;
 			if (!t.forceSaveButtonContinue) {
-				t.sync_EndAction(c_oAscAsyncActionType.Information, c_oAscAsyncAction.Save);
+				t.sync_EndAction(c_oAscAsyncActionType.BlockInteraction, c_oAscAsyncAction.Save);
 			}
 
 			// Обновляем состояние возможности сохранения документа
