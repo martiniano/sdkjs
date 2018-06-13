@@ -1,4 +1,5 @@
 .idea/
+deploy
 cell/sdk-all-min.js
 cell/sdk-all.js
 cell/sdk-all.cache
