@@ -213,8 +213,8 @@
 	 * @memberOf Asc
 	 */
 	function asc_CAscEditorPermissions() {
-		this.licenseType = c_oLicenseResult.Error;
-		this.licenseMode = c_oLicenseMode.None;
+		this.licenseType = c_oLicenseResult.Success;
+		this.licenseMode = c_oLicenseMode.Developer;
 		this.isLight = false;
 		this.rights = c_oRights.None;
 

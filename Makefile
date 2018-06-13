@@ -1,5 +1,5 @@
 GRUNT = grunt
-GRUNT_FLAGS = --no-color -v 
+GRUNT_FLAGS = --no-color -v --level=WHITESPACE_ONLY
 
 OUTPUT_DIR = deploy
 OUTPUT = $(OUTPUT_DIR)
@@ -7,8 +7,8 @@ OUTPUT = $(OUTPUT_DIR)
 COMPANY_NAME ?= onlyoffice
 PRODUCT_NAME ?= documentserver
 
-PRODUCT_VERSION ?= 0.0.0
-BUILD_NUMBER ?= 0
+PRODUCT_VERSION ?= 5.1.4
+BUILD_NUMBER ?= 1
 
 GRUNT_ENV += PRODUCT_VERSION=$(PRODUCT_VERSION)
 GRUNT_ENV += BUILD_NUMBER=$(BUILD_NUMBER)
@@ -36,7 +36,7 @@ all: $(WEBAPPS)
 
 $(WEBAPPS): $(WEBAPPS_FILES)
 	mkdir -p $(OUTPUT)/$(WEBAPPS_DIR) && \
-		cp -r -t $(OUTPUT)/$(WEBAPPS_DIR) ../$(WEBAPPS_DIR)/deploy/** 
+		cp -r ../$(WEBAPPS_DIR)/deploy/** $(OUTPUT)/$(WEBAPPS_DIR) 
 
 $(WEBAPPS_FILES): $(NODE_MODULES) $(SDKJS_FILES)
 	cd ../$(WEBAPPS_DIR)/build  && \
