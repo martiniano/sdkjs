@@ -1498,7 +1498,7 @@
 		}, true);
 
 		// send focus
-		window['AscCommon'].g_inputContext.HtmlArea.focus();
+		//window['AscCommon'].g_inputContext.HtmlArea.focus();
 	};
 
 	window["SetInputDebugMode"] = function()
