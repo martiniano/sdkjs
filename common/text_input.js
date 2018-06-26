@@ -1498,6 +1498,7 @@
 		}, true);
 
 		// send focus
+		//Disabled - Nuclearis - 26 June 2018
 		//window['AscCommon'].g_inputContext.HtmlArea.focus();
 	};
 
