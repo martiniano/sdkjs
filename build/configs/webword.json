@@ -203,7 +203,8 @@
 		"../common/text_input.js",
 		"../common/Drawings/Format/OleObject.js",
 		"../common/Drawings/Format/DrawingContent.js",
-		"../common/plugins.js"
+        "../common/plugins.js",
+        "../word/custom/nuclearis.js"
       ],
       "private": [
         "../common/Private/versionHistory.js",
