@@ -1590,6 +1590,53 @@
             }
         }
     };
+
+
+    /**
+     * Remove watermark on each page of document
+     * @param {?string} [sText="WATERMARK"]
+     */
+    ApiDocument.prototype.RemoveWatermark = function(sText){
+        var oSectPrMap = {};
+        if(this.Document.SectPr){
+            oSectPrMap[this.Document.SectPr.Get_Id()] = this.Document.SectPr;
+        }
+        var oElement;
+        for(var i = 0; i < this.Document.Content.length; ++i){
+            oElement = this.Document.Content[i];
+            if(oElement instanceof Paragraph){
+                if(oElement.SectPr){
+                    oSectPrMap[oElement.SectPr.Get_Id()] = oElement.SectPr;
+                }
+            }
+        }
+        var oHeadersMap = {};
+        var oApiSection, oHeader;
+        for(var sId in oSectPrMap){
+            if(oSectPrMap.hasOwnProperty(sId)){
+                oApiSection = new ApiSection(oSectPrMap[sId]);
+                oHeader = oApiSection.GetHeader("title", false);
+                if(oHeader){
+                    oHeadersMap[oHeader.Document.Get_Id()] = oHeader;
+                }
+                oHeader = oApiSection.GetHeader("even", false);
+                if(oHeader){
+                    oHeadersMap[oHeader.Document.Get_Id()] = oHeader;
+                }
+                oHeader = oApiSection.GetHeader("default", true);
+                if(oHeader){
+                    oHeadersMap[oHeader.Document.Get_Id()] = oHeader;
+                }
+            }
+        }
+        for(var sId in oHeadersMap){
+            if(oHeadersMap.hasOwnProperty(sId)){
+                privateRemoveWatermarkFromContent(this.Document.Api, oHeadersMap[sId], sText);
+            }
+        }
+    };
+
+
     /**
      * Get the type of this class.
      * @returns {"document"}
@@ -5273,6 +5320,21 @@
                 oElement = oApi.CreateParagraph();
                 oElement.AddDrawing(private_CreateWatermark(sText, bIsDiagonal));
                 oContent.Push(oElement);
+            }
+        }
+    }
+
+    function privateRemoveWatermarkFromContent(oApi, oContent, sText){
+        if(oContent){
+            var drawingObjects = oContent.Document.GetAllDrawingObjects();
+            for(let drawingObject of drawingObjects){
+                if(drawingObject.GraphicObj instanceof CShape 
+                    && drawingObject.GraphicObj.getDocContent() != null
+                    && drawingObject.GraphicObj.getDocContent().Content != null 
+                    && drawingObject.GraphicObj.getDocContent().Content.length > 0 
+                    && drawingObject.GraphicObj.getDocContent().Content[0].GetText().trim() === sText){
+                    drawingObject.Remove_FromDocument(true);
+                }
             }
         }
     }

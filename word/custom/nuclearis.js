@@ -1,4 +1,15 @@
 
+
+Asc['asc_docs_api'].prototype.nuclearis_registerCallbacks = function() {
+    
+    var me = this;
+
+    this.asc_registerCallback('asc_onPrintUrl', function(url){
+        me.nuclearis_removeWatermark();
+    });
+
+}
+
 Asc['asc_docs_api'].prototype.nuclearis_redoSignatures = function() 
 {
     var me = this;
@@ -82,6 +93,77 @@ Asc['asc_docs_api'].prototype.nuclearis_AddLineBreak = function()
     }
 };
 
+//Override asc_Print
+Asc['asc_docs_api'].prototype.asc_Print = function(bIsDownloadEvent)
+{
+    var me = this;
+
+    if (window["AscDesktopEditor"])
+    {
+        if (null != this.WordControl.m_oDrawingDocument.m_oDocumentRenderer)
+        {
+            if (window["AscDesktopEditor"]["IsSupportNativePrint"](this.DocumentUrl) === true)
+            {
+                window["AscDesktopEditor"]["Print"]();
+                return;
+            }
+        }
+        else
+        {
+            window["AscDesktopEditor"]["Print"]();
+            return;
+        }
+    }
+
+    this.nuclearis_addWatermark();
+
+    this._print(Asc.c_oAscAsyncAction.Print, bIsDownloadEvent ? AscCommon.DownloadType.Print : AscCommon.DownloadType.None);
+};
+
+Asc['asc_docs_api'].prototype.nuclearis_addWatermark = function(){
+    var NUCLEARIS_WATERMARK_STRING = "\
+    {\
+        \"transparent\" : 0.1,\
+        \"type\" : \"rect\",\
+        \"width\" : 230,\
+        \"height\" : 30,\
+        \"rotate\" : -45,\
+        \"margins\" : [ 0, 0, 0, 0 ],\
+        \"align\" : 1,\
+        \
+        \"paragraphs\" : [\
+        {\
+            \"align\" : 2,\
+            \"linespacing\" : 1,\
+            \
+            \"runs\" : [\
+                {\
+                    \"text\" : \"RASCUNHO\",\
+                    \"font-family\" : \"Arial\",\
+                    \"font-size\" : 70,\
+                    \"bold\" : true,\
+                    \"italic\" : false,\
+                    \"strikeout\" : false,\
+                    \"underline\" : false\
+                },\
+                {\
+                    \"text\" : \"<%br%>\"\
+                }\
+            ]\
+        }\
+    ]\
+    }";
+
+    this.watermarkDraw = new AscCommon.CWatermarkOnDraw(NUCLEARIS_WATERMARK_STRING);
+    this.watermarkDraw.Generate();
+    this.watermarkDraw.StartRenderer();
+}
+
+Asc['asc_docs_api'].prototype.nuclearis_removeWatermark = function(){
+    this.watermarkDraw = null;
+}
+
+
 
 /*
 function NuclearisCustomizations(){
@@ -95,5 +177,10 @@ Asc['asc_docs_api'].prototype["nuclearis_redoSignatures"] = Asc['asc_docs_api'].
 Asc['asc_docs_api'].prototype["nuclearis_InsertText"] = Asc['asc_docs_api'].prototype.nuclearis_InsertText;
 Asc['asc_docs_api'].prototype["nuclearis_NewParagraph"] = Asc['asc_docs_api'].prototype.nuclearis_NewParagraph;
 Asc['asc_docs_api'].prototype["nuclearis_AddLineBreak"]  = Asc['asc_docs_api'].prototype.nuclearis_AddLineBreak;
+Asc['asc_docs_api'].prototype["nuclearis_addWatermark"]  = Asc['asc_docs_api'].prototype.nuclearis_addWatermark;
+Asc['asc_docs_api'].prototype["nuclearis_removeWatermark"]  = Asc['asc_docs_api'].prototype.nuclearis_removeWatermark;
+Asc['asc_docs_api'].prototype["nuclearis_registerCallbacks"]  = Asc['asc_docs_api'].prototype.nuclearis_registerCallbacks;
+Asc['asc_docs_api'].prototype["asc_Print"]  = Asc['asc_docs_api'].prototype.asc_Print;
+
 //window['Asc']['asc_docs_api'].prototype["nuclearis_redoSignatures"] = window['Asc']['asc_docs_api'].prototype.nuclearis_redoSignatures;
  

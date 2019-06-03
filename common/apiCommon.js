@@ -3553,6 +3553,8 @@
 							oRun.AddText(sCustomText);
 						}
 
+						oRun.Set_Spacing(10);
+
 						oNewParagraph.Internal_Content_Add(i, oRun, false);
 					}
 					oContent.Internal_Content_Add(oContent.Content.length, oNewParagraph);
@@ -3623,6 +3625,7 @@
 			}, this, [obj]);
 		};
 	}
+
 	window.TEST_WATERMARK_STRING = "\
 	{\
 		\"transparent\" : 0.3,\
