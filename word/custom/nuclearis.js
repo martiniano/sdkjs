@@ -115,7 +115,9 @@ Asc['asc_docs_api'].prototype.asc_Print = function(bIsDownloadEvent)
         }
     }
 
-    this.nuclearis_addWatermark();
+    if(!this.isViewMode){
+        this.nuclearis_addWatermark();
+    }
 
     this._print(Asc.c_oAscAsyncAction.Print, bIsDownloadEvent ? AscCommon.DownloadType.Print : AscCommon.DownloadType.None);
 };
@@ -144,7 +146,8 @@ Asc['asc_docs_api'].prototype.nuclearis_addWatermark = function(){
                     \"bold\" : true,\
                     \"italic\" : false,\
                     \"strikeout\" : false,\
-                    \"underline\" : false\
+                    \"underline\" : false,\
+                    \"text-spacing\" : 10\
                 },\
                 {\
                     \"text\" : \"<%br%>\"\
@@ -160,18 +163,11 @@ Asc['asc_docs_api'].prototype.nuclearis_addWatermark = function(){
 }
 
 Asc['asc_docs_api'].prototype.nuclearis_removeWatermark = function(){
+    if(this.watermarkDraw != null){
+        this.watermarkDraw.EndRenderer();
+    }
     this.watermarkDraw = null;
 }
-
-
-
-/*
-function NuclearisCustomizations(){
-}
-
-NuclearisCustomizations.prototype.redoSignatures = function(){
-}
-*/
 
 Asc['asc_docs_api'].prototype["nuclearis_redoSignatures"] = Asc['asc_docs_api'].prototype.nuclearis_redoSignatures;
 Asc['asc_docs_api'].prototype["nuclearis_InsertText"] = Asc['asc_docs_api'].prototype.nuclearis_InsertText;

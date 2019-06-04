@@ -3553,7 +3553,9 @@
 							oRun.AddText(sCustomText);
 						}
 
-						oRun.Set_Spacing(10);
+						if(AscFormat.isRealNumber(oRunS['text-spacing'])){
+							oRun.Set_Spacing(oRunS['text-spacing']);
+						}
 
 						oNewParagraph.Internal_Content_Add(i, oRun, false);
 					}

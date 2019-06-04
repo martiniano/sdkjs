@@ -5222,8 +5222,8 @@
 
     function private_CreateWatermark(sText, bDiagonal){
         var sText2 = ((typeof (sText) === "string") && (sText.length > 0)) ? sText : "WATERMARK";
-        var sFontName2 = undefined;
-        var nFontSize2 = 2;
+        var sFontName2 = 'Arial';
+        var nFontSize2 = 50;
         var oTextFill2 = AscFormat.CreateUnfilFromRGB(127, 127, 127);
         oTextFill2.transparent = 127;
 
@@ -5242,12 +5242,11 @@
         oXfrm.setOffX(0);
         oXfrm.setOffY(0);
 
-
-        var fHeight = 45;
+        var fHeight = 20;
         var fWidth;
         if(bDiagonal !== false){
-            fWidth = 175;
-            oXfrm.setRot(7*Math.PI/4);
+            fWidth = 230;
+            oXfrm.setRot(AscFormat.normalizeRotate(-45 * Math.PI / 180));
         }
         else{
             fWidth = 165;
@@ -5261,17 +5260,32 @@
         oSpPr.setLn(AscFormat.CreateNoFillLine());
         oSpPr.setGeometry(AscFormat.CreateGeometry("rect"));
         oShape.setSpPr(oSpPr);
+        oShape.setVerticalAlign(1);
+        oShape.setPaddings({Left: 0, Top: 0, Right: 0, Bottom: 0});
         oSpPr.setParent(oShape);
         var oContent = oShape.getDocContent();
-        AscFormat.AddToContentFromString(oContent, sText2);
-        var oTextPr = new CTextPr();
-        oTextPr.FontSize = nFontSize2;
-        oTextPr.RFonts.Ascii = sFontName2;
-        oTextPr.TextFill = oTextFill2;
-        oContent.Set_ApplyToAll(true);
-        oContent.AddToParagraph(new ParaTextPr(oTextPr));
-        oContent.SetParagraphAlign(AscCommon.align_Center);
-        oContent.Set_ApplyToAll(false);
+
+        var oNewParagraph = new Paragraph(oContent.DrawingDocument, oContent, false);
+        oNewParagraph.Set_Align(2);
+        oNewParagraph.Set_Spacing({Line: 2, LineRule: Asc.linerule_Auto}, true);
+
+        var oRun = new AscCommonWord.ParaRun(oNewParagraph, false);
+        oRun.Set_RFonts_Ascii({Name : sFontName2, Index : -1});
+        oRun.Set_RFonts_CS({Name : sFontName2, Index : -1});
+        oRun.Set_RFonts_EastAsia({Name : sFontName2, Index : -1});
+        oRun.Set_RFonts_HAnsi({Name : sFontName2, Index : -1});
+        oRun.Set_FontSize(nFontSize2);
+        oRun.Set_Bold(true);
+        oRun.Set_Italic(false);
+        oRun.Set_Strikeout(false);
+        oRun.Set_Underline(false);
+        oRun.AddText(sText2);
+        oRun.Set_Spacing(10);
+        oRun.Set_TextFill(oTextFill2);
+        oNewParagraph.Internal_Content_Add(0, oRun, false);
+    
+        oContent.Internal_Content_Add(oContent.Content.length, oNewParagraph);
+    
         var oBodyPr = oShape.getBodyPr().createDuplicate();
         oBodyPr.rot = 0;
         oBodyPr.spcFirstLastPara = false;
