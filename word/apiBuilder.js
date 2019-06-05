@@ -5338,15 +5338,31 @@
         }
     }
 
+    function privateGetText(cDocumentContent){
+        var text = "";
+
+        if(cDocumentContent instanceof CDocumentContent){
+            var arrParagraphs = cDocumentContent.GetAllParagraphs({All : true});
+            
+            for (var nIndex = 0, nCount = arrParagraphs.length; nIndex < nCount; ++nIndex)
+            {
+                text += arrParagraphs[nIndex].GetText();
+            }
+        }
+    
+        return text;
+    }
+
     function privateRemoveWatermarkFromContent(oApi, oContent, sText){
         if(oContent){
             var drawingObjects = oContent.Document.GetAllDrawingObjects();
-            for(let drawingObject of drawingObjects){
+            var nDrawingObjectsCount = drawingObjects.length;
+            for (var i = 0; i < nDrawingObjectsCount; ++i) {
+                var drawingObject = drawingObjects[i];
                 if(drawingObject.GraphicObj instanceof CShape 
                     && drawingObject.GraphicObj.getDocContent() != null
-                    && drawingObject.GraphicObj.getDocContent().Content != null 
-                    && drawingObject.GraphicObj.getDocContent().Content.length > 0 
-                    && drawingObject.GraphicObj.getDocContent().Content[0].GetText().trim() === sText){
+                    && privateGetText(drawingObject.GraphicObj.getDocContent()).trim() === sText
+                    && drawingObject.Get_ParentObject_or_DocumentPos() != null){
                     drawingObject.Remove_FromDocument(true);
                 }
             }
