@@ -983,7 +983,7 @@
 		};
 
 		this._coAuthoringInitEnd();
-		this.CoAuthoringApi.init(this.User, this.documentId, this.documentCallbackUrl, 'fghhfgsjdgfjs', this.editorId, this.documentFormatSave, this.DocInfo);
+		this.CoAuthoringApi.init(this.User, this.documentId, this.documentCallbackUrl, 'nuclearis_123456', this.editorId, this.documentFormatSave, this.DocInfo);
 	};
 	baseEditorsApi.prototype._coAuthoringInitEnd                 = function()
 	{
