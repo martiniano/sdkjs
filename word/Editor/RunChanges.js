@@ -256,6 +256,15 @@ function private_ParaRunChangesOnMergeLangTextPr(oChange)
 
 	return true;
 }
+
+
+function checkIsStructuredClass(Class){
+	if((Class instanceof CInlineLevelSdt || Class instanceof CBlockLevelSdt) && Class.Content && Class.Content.length > 0){
+		return Class.Content[0];
+	}
+	return Class;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /**
@@ -273,7 +282,7 @@ CChangesRunAddItem.prototype.constructor = CChangesRunAddItem;
 CChangesRunAddItem.prototype.Type = AscDFH.historyitem_ParaRun_AddItem;
 CChangesRunAddItem.prototype.Undo = function()
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 
 	oRun.Content.splice(this.Pos, this.Items.length);
 
@@ -283,7 +292,7 @@ CChangesRunAddItem.prototype.Undo = function()
 };
 CChangesRunAddItem.prototype.Redo = function()
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 
 	var Array_start = oRun.Content.slice(0, this.Pos);
 	var Array_end   = oRun.Content.slice(this.Pos);
@@ -310,7 +319,11 @@ CChangesRunAddItem.prototype.private_ReadItem = function(Reader)
 };
 CChangesRunAddItem.prototype.Load = function(Color)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
+	if(this.Class instanceof CInlineLevelSdt && this.Class.Content && this.Class.Content.length > 0){
+		oRun = this.Class.Content[0];
+	}
+	
 	for (var Index = 0, Count = this.Items.length; Index < Count; Index++)
 	{
 		var Pos = oRun.m_oContentChanges.Check(AscCommon.contentchanges_Add, this.PosArray[Index]);
@@ -362,7 +375,7 @@ CChangesRunRemoveItem.prototype.constructor = CChangesRunRemoveItem;
 CChangesRunRemoveItem.prototype.Type = AscDFH.historyitem_ParaRun_RemoveItem;
 CChangesRunRemoveItem.prototype.Undo = function()
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 
 	var Array_start = oRun.Content.slice(0, this.Pos);
 	var Array_end   = oRun.Content.slice(this.Pos);
@@ -381,7 +394,7 @@ CChangesRunRemoveItem.prototype.Undo = function()
 };
 CChangesRunRemoveItem.prototype.Redo = function()
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Content.splice(this.Pos, this.Items.length);
 
 	oRun.RecalcInfo.Measure = true;
@@ -398,7 +411,7 @@ CChangesRunRemoveItem.prototype.private_ReadItem = function(Reader)
 };
 CChangesRunRemoveItem.prototype.Load = function()
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 
 	for (var Index = 0, Count = this.PosArray.length; Index < Count; Index++)
 	{
@@ -443,7 +456,7 @@ CChangesRunBold.prototype.constructor = CChangesRunBold;
 CChangesRunBold.prototype.Type = AscDFH.historyitem_ParaRun_Bold;
 CChangesRunBold.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Bold = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -470,7 +483,7 @@ CChangesRunItalic.prototype.constructor = CChangesRunItalic;
 CChangesRunItalic.prototype.Type = AscDFH.historyitem_ParaRun_Italic;
 CChangesRunItalic.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Italic = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -497,7 +510,7 @@ CChangesRunStrikeout.prototype.constructor = CChangesRunStrikeout;
 CChangesRunStrikeout.prototype.Type = AscDFH.historyitem_ParaRun_Strikeout;
 CChangesRunStrikeout.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Strikeout = Value;
 
 	oRun.Recalc_CompiledPr(false);
@@ -524,7 +537,7 @@ CChangesRunUnderline.prototype.constructor = CChangesRunUnderline;
 CChangesRunUnderline.prototype.Type = AscDFH.historyitem_ParaRun_Underline;
 CChangesRunUnderline.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Underline = Value;
 
 	oRun.Recalc_CompiledPr(false);
@@ -551,7 +564,7 @@ CChangesRunFontSize.prototype.constructor = CChangesRunFontSize;
 CChangesRunFontSize.prototype.Type = AscDFH.historyitem_ParaRun_FontSize;
 CChangesRunFontSize.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.FontSize = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -582,7 +595,7 @@ CChangesRunColor.prototype.private_CreateObject = function()
 };
 CChangesRunColor.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Color = Value;
 
 	oRun.Recalc_CompiledPr(false);
@@ -609,7 +622,7 @@ CChangesRunVertAlign.prototype.constructor = CChangesRunVertAlign;
 CChangesRunVertAlign.prototype.Type = AscDFH.historyitem_ParaRun_VertAlign;
 CChangesRunVertAlign.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.VertAlign = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -716,7 +729,7 @@ CChangesRunHighLight.prototype.ReadFromBinary = function(Reader)
 };
 CChangesRunHighLight.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.HighLight = Value;
 
 	oRun.Recalc_CompiledPr(false);
@@ -743,7 +756,7 @@ CChangesRunRStyle.prototype.constructor = CChangesRunRStyle;
 CChangesRunRStyle.prototype.Type = AscDFH.historyitem_ParaRun_RStyle;
 CChangesRunRStyle.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.RStyle = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -770,7 +783,7 @@ CChangesRunSpacing.prototype.constructor = CChangesRunSpacing;
 CChangesRunSpacing.prototype.Type = AscDFH.historyitem_ParaRun_Spacing;
 CChangesRunSpacing.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Spacing = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -797,7 +810,7 @@ CChangesRunDStrikeout.prototype.constructor = CChangesRunDStrikeout;
 CChangesRunDStrikeout.prototype.Type = AscDFH.historyitem_ParaRun_DStrikeout;
 CChangesRunDStrikeout.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.DStrikeout = Value;
 
 	oRun.Recalc_CompiledPr(false);
@@ -824,7 +837,7 @@ CChangesRunCaps.prototype.constructor = CChangesRunCaps;
 CChangesRunCaps.prototype.Type = AscDFH.historyitem_ParaRun_Caps;
 CChangesRunCaps.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Caps = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -851,7 +864,7 @@ CChangesRunSmallCaps.prototype.constructor = CChangesRunSmallCaps;
 CChangesRunSmallCaps.prototype.Type = AscDFH.historyitem_ParaRun_SmallCaps;
 CChangesRunSmallCaps.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.SmallCaps = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -878,7 +891,7 @@ CChangesRunPosition.prototype.constructor = CChangesRunPosition;
 CChangesRunPosition.prototype.Type = AscDFH.historyitem_ParaRun_Position;
 CChangesRunPosition.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Position = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -913,7 +926,7 @@ CChangesRunRFonts.prototype.private_IsCreateEmptyObject = function()
 };
 CChangesRunRFonts.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.RFonts = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -989,7 +1002,7 @@ CChangesRunLang.prototype.private_IsCreateEmptyObject = function()
 };
 CChangesRunLang.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Lang = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1116,7 +1129,7 @@ CChangesRunRFontsAscii.prototype.ReadFromBinary = function(Reader)
 };
 CChangesRunRFontsAscii.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.RFonts.Ascii = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1211,7 +1224,7 @@ CChangesRunRFontsHAnsi.prototype.ReadFromBinary = function(Reader)
 };
 CChangesRunRFontsHAnsi.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.RFonts.HAnsi = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1306,7 +1319,7 @@ CChangesRunRFontsCS.prototype.ReadFromBinary = function(Reader)
 };
 CChangesRunRFontsCS.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.RFonts.CS = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1401,7 +1414,7 @@ CChangesRunRFontsEastAsia.prototype.ReadFromBinary = function(Reader)
 };
 CChangesRunRFontsEastAsia.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.RFonts.EastAsia = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1428,7 +1441,7 @@ CChangesRunRFontsHint.prototype.constructor = CChangesRunRFontsHint;
 CChangesRunRFontsHint.prototype.Type = AscDFH.historyitem_ParaRun_RFonts_Hint;
 CChangesRunRFontsHint.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.RFonts.Hint = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1455,7 +1468,7 @@ CChangesRunLangBidi.prototype.constructor = CChangesRunLangBidi;
 CChangesRunLangBidi.prototype.Type = AscDFH.historyitem_ParaRun_Lang_Bidi;
 CChangesRunLangBidi.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Lang.Bidi = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1483,7 +1496,7 @@ CChangesRunLangEastAsia.prototype.constructor = CChangesRunLangEastAsia;
 CChangesRunLangEastAsia.prototype.Type = AscDFH.historyitem_ParaRun_Lang_EastAsia;
 CChangesRunLangEastAsia.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Lang.EastAsia = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1511,7 +1524,7 @@ CChangesRunLangVal.prototype.constructor = CChangesRunLangVal;
 CChangesRunLangVal.prototype.Type = AscDFH.historyitem_ParaRun_Lang_Val;
 CChangesRunLangVal.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Lang.Val = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1547,7 +1560,7 @@ CChangesRunTextPr.prototype.private_IsCreateEmptyObject = function()
 };
 CChangesRunTextPr.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1780,7 +1793,7 @@ CChangesRunUnifill.prototype.private_CreateObject = function()
 };
 CChangesRunUnifill.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Unifill = Value;
 
 	oRun.Recalc_CompiledPr(false);
@@ -1822,7 +1835,7 @@ CChangesRunShd.prototype.private_CreateObject = function()
 };
 CChangesRunShd.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.Shd = Value;
 
 	oRun.Recalc_CompiledPr(false);
@@ -1860,7 +1873,7 @@ CChangesRunMathStyle.prototype.constructor = CChangesRunMathStyle;
 CChangesRunMathStyle.prototype.Type = AscDFH.historyitem_ParaRun_MathStyle;
 CChangesRunMathStyle.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.MathPrp.sty = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1897,7 +1910,7 @@ CChangesRunMathPrp.prototype.private_IsCreateEmptyObject = function()
 };
 CChangesRunMathPrp.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.MathPrp = Value;
 
 	oRun.Recalc_CompiledPr(true);
@@ -1980,7 +1993,7 @@ CChangesRunReviewType.prototype.ReadFromBinary = function(Reader)
 };
 CChangesRunReviewType.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 
 	oRun.ReviewType = Value.ReviewType;
 	oRun.ReviewInfo = Value.ReviewInfo;
@@ -2113,7 +2126,7 @@ CChangesRunPrChange.prototype.ReadFromBinary = function(Reader)
 };
 CChangesRunPrChange.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 
 	oRun.Pr.PrChange   = Value.PrChange;
 	oRun.Pr.ReviewInfo = Value.ReviewInfo;
@@ -2149,7 +2162,7 @@ CChangesRunTextFill.prototype.private_CreateObject = function()
 };
 CChangesRunTextFill.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.TextFill = Value;
 
 	oRun.Recalc_CompiledPr(false);
@@ -2180,7 +2193,7 @@ CChangesRunTextOutline.prototype.private_CreateObject = function()
 };
 CChangesRunTextOutline.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.TextOutline = Value;
 
 	oRun.Recalc_CompiledPr(false);
@@ -2211,7 +2224,7 @@ CChangesRunPrReviewInfo.prototype.private_CreateObject = function()
 };
 CChangesRunPrReviewInfo.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.Pr.ReviewInfo = Value;
 };
 CChangesRunPrReviewInfo.prototype.Merge = function(oChange)
@@ -2245,7 +2258,7 @@ CChangesRunContentReviewInfo.prototype.private_IsCreateEmptyObject = function()
 };
 CChangesRunContentReviewInfo.prototype.private_SetValue = function(Value)
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 	oRun.ReviewInfo = Value;
 };
 CChangesRunContentReviewInfo.prototype.Merge = function(oChange)
@@ -2421,7 +2434,7 @@ CChangesRunMathForcedBreak.prototype.constructor = CChangesRunMathForcedBreak;
 CChangesRunMathForcedBreak.prototype.Type = AscDFH.historyitem_ParaRun_MathForcedBreak;
 CChangesRunMathForcedBreak.prototype.Undo = function()
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 
 	if(this.bInsert)
 		oRun.MathPrp.Delete_ForcedBreak();
@@ -2430,7 +2443,7 @@ CChangesRunMathForcedBreak.prototype.Undo = function()
 };
 CChangesRunMathForcedBreak.prototype.Redo = function()
 {
-	var oRun = this.Class;
+	var oRun = checkIsStructuredClass(this.Class);
 
 	if(this.bInsert)
 		oRun.MathPrp.Insert_ForcedBreak(this.alnAt);

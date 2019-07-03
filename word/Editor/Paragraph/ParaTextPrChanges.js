@@ -401,6 +401,9 @@ CChangesParaTextPrVertAlign.prototype.Merge = private_ParaTextPrChangesOnMergeVa
  */
 function CChangesParaTextPrHighLight(Class, Old, New, Color)
 {
+	if(Class.Value === undefined){
+		Class.Value = new CTextPr(); 
+	}
 	AscDFH.CChangesBaseProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrHighLight.prototype = Object.create(AscDFH.CChangesBaseProperty.prototype);
