@@ -49,6 +49,7 @@ function CInlineLevelSdt()
 
 	this.Pr   = new CSdtPr();
 	this.Type = para_InlineLevelSdt;
+	this.RecalcInfo = new CInlineLevelSdtRecalcInfo();
 
 	this.BoundsPaths          = null;
 	this.BoundsPathsStartPage = -1;
@@ -520,6 +521,104 @@ CInlineLevelSdt.prototype.ClearContentControl = function()
 	this.Add_ToContent(0, new ParaRun(this.GetParagraph(), false));
 	this.Remove_FromContent(1, this.Content.length - 1);
 };
+
+CInlineLevelSdt.prototype.protected_UpdateSpellChecking = function()
+{
+ 
+};
+
+CInlineLevelSdt.prototype.private_UpdateTrackRevisionOnChangeContent = function(bUpdateInfo)
+{
+ 
+};
+
+CInlineLevelSdt.prototype.private_ResetSelection = function()
+{
+    this.Selection.StartPos      = 0;
+    this.Selection.EndPos        = 0;
+    this.Selection.StartManually = false;
+    this.Selection.EndManually   = false;
+
+};
+
+function CInlineLevelSdtRecalcInfo()
+{
+    this.Recalc_0_Type = pararecalc_0_All;
+    this.Recalc_0_Spell =
+    {
+        Type      : pararecalc_0_All,
+        StartPos  : 0,
+        EndPos    : 0
+    };
+}
+
+CInlineLevelSdtRecalcInfo.prototype =
+{
+    Set_Type_0 : function(Type)
+    {
+        this.Recalc_0_Type = Type;
+    },
+
+    Set_Type_0_Spell : function(Type, StartPos, EndPos)
+    {
+        if ( pararecalc_0_Spell_All === this.Recalc_0_Spell.Type )
+            return;
+        else if ( pararecalc_0_Spell_None === this.Recalc_0_Spell.Type || pararecalc_0_Spell_Lang === this.Recalc_0_Spell.Type )
+        {
+            this.Recalc_0_Spell.Type = Type;
+            if ( pararecalc_0_Spell_Pos === Type )
+            {
+                this.Recalc_0_Spell.StartPos = StartPos;
+                this.Recalc_0_Spell.EndPos   = EndPos;
+            }
+        }
+        else if ( pararecalc_0_Spell_Pos === this.Recalc_0_Spell.Type )
+        {
+            if ( pararecalc_0_Spell_All === Type )
+                this.Recalc_0_Spell.Type = Type;
+            else if ( pararecalc_0_Spell_Pos === Type )
+            {
+                this.Recalc_0_Spell.StartPos = Math.min( StartPos, this.Recalc_0_Spell.StartPos );
+                this.Recalc_0_Spell.EndPos   = Math.max( EndPos,   this.Recalc_0_Spell.EndPos   );
+            }
+        }
+    },
+
+    Update_Spell_OnChange : function(Pos, Count, bAdd)
+    {
+        if ( pararecalc_0_Spell_Pos === this.Recalc_0_Spell.Type )
+        {
+            if ( true === bAdd )
+            {
+                if ( this.Recalc_0_Spell.StartPos > Pos )
+                    this.Recalc_0_Spell.StartPos++;
+
+                if ( this.Recalc_0_Spell.EndPos >= Pos )
+                    this.Recalc_0_Spell.EndPos++;
+            }
+            else
+            {
+                if ( this.Recalc_0_Spell.StartPos > Pos )
+                {
+                    if ( this.Recalc_0_Spell.StartPos > Pos + Count )
+                        this.Recalc_0_Spell.StartPos -= Count;
+                    else
+                        this.Recalc_0_Spell.StartPos = Pos;
+                }
+
+                if ( this.Recalc_0_Spell.EndPos >= Pos )
+                {
+                    if ( this.Recalc_0_Spell.EndPos >= Pos + Count )
+                        this.Recalc_0_Spell.EndPos -= Count;
+                    else
+                        this.Recalc_0_Spell.EndPos = Math.max( 0, Pos - 1 );
+                }
+            }
+        }
+    }
+};
+
+
 //--------------------------------------------------------export--------------------------------------------------------
 window['AscCommonWord'] = window['AscCommonWord'] || {};
 window['AscCommonWord'].CInlineLevelSdt = CInlineLevelSdt;

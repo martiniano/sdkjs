@@ -169,6 +169,50 @@ Asc['asc_docs_api'].prototype.nuclearis_removeWatermark = function(){
     this.watermarkDraw = null;
 }
 
+Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oContent){
+    var _blocks = this.WordControl.m_oLogicDocument.GetAllContentControls();
+    var _ret = [];
+    var _obj = null;
+    for (var i = 0; i < _blocks.length; i++)
+    {
+        _obj = _blocks[i].GetContentControlPr();
+        var oContentControlText = new CParagraphGetText();
+        oContentControlText.SetBreakOnNonText(false);
+        oContentControlText.SetParaEndToSpace(true);
+        _blocks[i].Get_Text(oContentControlText);
+
+        var tag = _obj.Tag.replace(/(m0;|m1;|m2;)/ig, 'm;');
+        var mCase = /m([0-9]);.*/.exec(_obj.Tag)[1];
+        if(oContent && oContent[tag]){
+            var content = oContent[tag];
+            switch(mCase){
+                case 0: //CamelCase
+                    content	= content.toCamelCase();
+                    break;
+                case 1: //UpperCase
+                    content	= content.toUpperCase();
+                    break;
+                case 2: //LowerCase
+                    content	= content.toLowerCase();
+                    break;
+            }
+
+            if(content !== oContentControlText.Text || _.isEmpty(oContentControlText.Text)){
+                console.log(content);
+                _blocks[i].ClearContentControl();
+                _blocks[i].Content[0].AddText(content);
+                //_blocks[i].Add_ToContent(0, oTable);
+                //_blocks[i].Remove_FromContent(1, _blocks[i].GetElementsCount() - 1);
+            }
+        }
+        
+        //_ret.push({"Tag" : _obj.Tag, "Id" : _obj.Id, "Lock" : _obj.Lock, "InternalId" : _obj.InternalId});
+    }
+    this.asc_Recalculate();
+
+    return _ret;
+}
+
 Asc['asc_docs_api'].prototype["nuclearis_redoSignatures"] = Asc['asc_docs_api'].prototype.nuclearis_redoSignatures;
 Asc['asc_docs_api'].prototype["nuclearis_InsertText"] = Asc['asc_docs_api'].prototype.nuclearis_InsertText;
 Asc['asc_docs_api'].prototype["nuclearis_NewParagraph"] = Asc['asc_docs_api'].prototype.nuclearis_NewParagraph;
@@ -177,6 +221,7 @@ Asc['asc_docs_api'].prototype["nuclearis_addWatermark"]  = Asc['asc_docs_api'].p
 Asc['asc_docs_api'].prototype["nuclearis_removeWatermark"]  = Asc['asc_docs_api'].prototype.nuclearis_removeWatermark;
 Asc['asc_docs_api'].prototype["nuclearis_registerCallbacks"]  = Asc['asc_docs_api'].prototype.nuclearis_registerCallbacks;
 Asc['asc_docs_api'].prototype["asc_Print"]  = Asc['asc_docs_api'].prototype.asc_Print;
+Asc['asc_docs_api'].prototype["nuclearis_replaceContentControls"]  = Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls;
 
 //window['Asc']['asc_docs_api'].prototype["nuclearis_redoSignatures"] = window['Asc']['asc_docs_api'].prototype.nuclearis_redoSignatures;
  

@@ -317,6 +317,8 @@ CChangesParagraphAddItem.prototype.Type = AscDFH.historyitem_Paragraph_AddItem;
 CChangesParagraphAddItem.prototype.Undo = function()
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
+
 	oParagraph.Content.splice(this.Pos, this.Items.length);
 	oParagraph.private_UpdateTrackRevisions();
 	oParagraph.private_CheckUpdateBookmarks(this.Items);
@@ -352,6 +354,7 @@ CChangesParagraphAddItem.prototype.private_ReadItem = function(Reader)
 CChangesParagraphAddItem.prototype.Load = function(Color)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	for (var nIndex = 0, nCount = this.Items.length; nIndex < nCount; ++nIndex)
 	{
 		var Pos     = oParagraph.m_oContentChanges.Check(AscCommon.contentchanges_Add, this.PosArray[nIndex]);
@@ -466,6 +469,7 @@ CChangesParagraphRemoveItem.prototype.private_ReadItem = function(Reader)
 CChangesParagraphRemoveItem.prototype.Load = function(Color)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	for (var nIndex = 0, nCount = this.Items.length; nIndex < nCount; ++nIndex)
 	{
 		var ChangesPos = oParagraph.m_oContentChanges.Check(AscCommon.contentchanges_Remove, this.PosArray[nIndex]);
@@ -526,6 +530,7 @@ CChangesParagraphNumbering.prototype.private_CreateObject = function()
 CChangesParagraphNumbering.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.NumPr = Value;
 
 	oParagraph.private_RefreshNumbering(oParagraph.Pr.NumPr);
@@ -550,6 +555,7 @@ CChangesParagraphAlign.prototype.Type = AscDFH.historyitem_Paragraph_Align;
 CChangesParagraphAlign.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.Jc = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -572,6 +578,7 @@ CChangesParagraphIndFirst.prototype.Type = AscDFH.historyitem_Paragraph_Ind_Firs
 CChangesParagraphIndFirst.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Ind)
 		oParagraph.Pr.Ind = new CParaInd();
@@ -598,6 +605,7 @@ CChangesParagraphIndLeft.prototype.Type = AscDFH.historyitem_Paragraph_Ind_Left;
 CChangesParagraphIndLeft.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Ind)
 		oParagraph.Pr.Ind = new CParaInd();
@@ -624,6 +632,7 @@ CChangesParagraphIndRight.prototype.Type = AscDFH.historyitem_Paragraph_Ind_Righ
 CChangesParagraphIndRight.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Ind)
 		oParagraph.Pr.Ind = new CParaInd();
@@ -650,6 +659,7 @@ CChangesParagraphContextualSpacing.prototype.Type = AscDFH.historyitem_Paragraph
 CChangesParagraphContextualSpacing.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.ContextualSpacing = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -672,6 +682,7 @@ CChangesParagraphKeepLines.prototype.Type = AscDFH.historyitem_Paragraph_KeepLin
 CChangesParagraphKeepLines.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.KeepLines = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -694,6 +705,7 @@ CChangesParagraphKeepNext.prototype.Type = AscDFH.historyitem_Paragraph_KeepNext
 CChangesParagraphKeepNext.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.KeepNext = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -716,6 +728,7 @@ CChangesParagraphPageBreakBefore.prototype.Type = AscDFH.historyitem_Paragraph_P
 CChangesParagraphPageBreakBefore.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.PageBreakBefore = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -738,6 +751,7 @@ CChangesParagraphSpacingLine.prototype.Type = AscDFH.historyitem_Paragraph_Spaci
 CChangesParagraphSpacingLine.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Spacing)
 		oParagraph.Pr.Spacing = new CParaSpacing();
@@ -764,6 +778,7 @@ CChangesParagraphSpacingLineRule.prototype.Type = AscDFH.historyitem_Paragraph_S
 CChangesParagraphSpacingLineRule.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Spacing)
 		oParagraph.Pr.Spacing = new CParaSpacing();
@@ -790,6 +805,7 @@ CChangesParagraphSpacingBefore.prototype.Type = AscDFH.historyitem_Paragraph_Spa
 CChangesParagraphSpacingBefore.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Spacing)
 		oParagraph.Pr.Spacing = new CParaSpacing();
@@ -816,6 +832,7 @@ CChangesParagraphSpacingAfter.prototype.Type = AscDFH.historyitem_Paragraph_Spac
 CChangesParagraphSpacingAfter.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Spacing)
 		oParagraph.Pr.Spacing = new CParaSpacing();
@@ -842,6 +859,7 @@ CChangesParagraphSpacingAfterAutoSpacing.prototype.Type = AscDFH.historyitem_Par
 CChangesParagraphSpacingAfterAutoSpacing.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Spacing)
 		oParagraph.Pr.Spacing = new CParaSpacing();
@@ -868,6 +886,7 @@ CChangesParagraphSpacingBeforeAutoSpacing.prototype.Type = AscDFH.historyitem_Pa
 CChangesParagraphSpacingBeforeAutoSpacing.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Spacing)
 		oParagraph.Pr.Spacing = new CParaSpacing();
@@ -894,6 +913,7 @@ CChangesParagraphShdValue.prototype.Type = AscDFH.historyitem_Paragraph_Shd_Valu
 CChangesParagraphShdValue.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Shd)
 		oParagraph.Pr.Shd = new CDocumentShd();
@@ -924,6 +944,7 @@ CChangesParagraphShdColor.prototype.private_CreateObject = function()
 CChangesParagraphShdColor.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Shd)
 		oParagraph.Pr.Shd = new CDocumentShd();
@@ -954,6 +975,7 @@ CChangesParagraphShdUnifill.prototype.private_CreateObject = function()
 CChangesParagraphShdUnifill.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 
 	if (undefined === oParagraph.Pr.Shd)
 		oParagraph.Pr.Shd = new CDocumentShd();
@@ -984,6 +1006,7 @@ CChangesParagraphShd.prototype.private_CreateObject = function()
 CChangesParagraphShd.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.Shd = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -1037,6 +1060,7 @@ CChangesParagraphWidowControl.prototype.Type = AscDFH.historyitem_Paragraph_Wido
 CChangesParagraphWidowControl.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.WidowControl = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -1063,6 +1087,7 @@ CChangesParagraphTabs.prototype.private_CreateObject = function()
 CChangesParagraphTabs.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.Tabs = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -1085,6 +1110,7 @@ CChangesParagraphPStyle.prototype.Type = AscDFH.historyitem_Paragraph_PStyle;
 CChangesParagraphPStyle.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.PStyle = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -1112,6 +1138,7 @@ CChangesParagraphBordersBetween.prototype.private_CreateObject = function()
 CChangesParagraphBordersBetween.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.Brd.Between = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -1138,6 +1165,7 @@ CChangesParagraphBordersBottom.prototype.private_CreateObject = function()
 CChangesParagraphBordersBottom.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.Brd.Bottom = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -1164,6 +1192,7 @@ CChangesParagraphBordersLeft.prototype.private_CreateObject = function()
 CChangesParagraphBordersLeft.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.Brd.Left = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -1190,6 +1219,7 @@ CChangesParagraphBordersRight.prototype.private_CreateObject = function()
 CChangesParagraphBordersRight.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.Brd.Right = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -1216,6 +1246,7 @@ CChangesParagraphBordersTop.prototype.private_CreateObject = function()
 CChangesParagraphBordersTop.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.Brd.Top = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -1242,6 +1273,7 @@ CChangesParagraphPr.prototype.private_CreateObject = function()
 CChangesParagraphPr.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
@@ -1486,6 +1518,7 @@ CChangesParagraphPresentationPrBullet.prototype.Merge = private_ParagraphChanges
 CChangesParagraphPresentationPrBullet.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.Bullet = Value;
 	oParagraph.CompiledPr.NeedRecalc = true;
 	oParagraph.Recalc_RunsCompiledPr();
@@ -1507,6 +1540,7 @@ CChangesParagraphPresentationPrLevel.prototype.Merge = private_ParagraphChangesO
 CChangesParagraphPresentationPrLevel.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.Lvl = Value;
 	oParagraph.CompiledPr.NeedRecalc = true;
 	oParagraph.Recalc_RunsCompiledPr();
@@ -1531,6 +1565,7 @@ CChangesParagraphFramePr.prototype.private_CreateObject = function()
 CChangesParagraphFramePr.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.FramePr = Value;
 	oParagraph.CompiledPr.NeedRecalc = true;
 	oParagraph.private_UpdateTrackRevisionOnChangeParaPr(false);
@@ -1554,6 +1589,7 @@ CChangesParagraphSectPr.prototype.Type = AscDFH.historyitem_Paragraph_SectionPr;
 CChangesParagraphSectPr.prototype.Undo = function()
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.SectPr = this.Old;
 	oParagraph.LogicDocument.Update_SectionsInfo();
 	private_ParagraphChangesOnSetValue(this.Class);
@@ -1561,6 +1597,7 @@ CChangesParagraphSectPr.prototype.Undo = function()
 CChangesParagraphSectPr.prototype.Redo = function()
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.SectPr = this.New;
 	oParagraph.LogicDocument.Update_SectionsInfo();
 	private_ParagraphChangesOnSetValue(this.Class);
@@ -1637,6 +1674,7 @@ CChangesParagraphPrChange.prototype.Type = AscDFH.historyitem_Paragraph_PrChange
 CChangesParagraphPrChange.prototype.Undo = function()
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.PrChange   = this.Old.PrChange;
 	oParagraph.Pr.ReviewInfo = this.Old.ReviewInfo;
 	oParagraph.private_UpdateTrackRevisions();
@@ -1645,6 +1683,7 @@ CChangesParagraphPrChange.prototype.Undo = function()
 CChangesParagraphPrChange.prototype.Redo = function()
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.PrChange   = this.New.PrChange;
 	oParagraph.Pr.ReviewInfo = this.New.ReviewInfo;
 	oParagraph.private_UpdateTrackRevisions();
@@ -1786,6 +1825,7 @@ CChangesParagraphPrReviewInfo.prototype.private_CreateObject = function()
 CChangesParagraphPrReviewInfo.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.ReviewInfo = Value;
 	oParagraph.private_UpdateTrackRevisionOnChangeParaPr(false);
 	private_ParagraphChangesOnSetValue(this.Class);
@@ -1814,6 +1854,7 @@ CChangesParagraphOutlineLvl.prototype.Type = AscDFH.historyitem_Paragraph_Outlin
 CChangesParagraphOutlineLvl.prototype.private_SetValue = function(Value)
 {
 	var oParagraph = this.Class;
+	if(oParagraph.Get_Type() != type_Paragraph) return;
 	oParagraph.Pr.OutlineLvl = Value;
 
 	oParagraph.CompiledPr.NeedRecalc = true;
