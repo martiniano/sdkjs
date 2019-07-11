@@ -684,7 +684,9 @@ CParagraphContentWithContentBase.prototype.protected_FillRangeEndPos = function(
 };
 CParagraphContentWithContentBase.prototype.protected_UpdateSpellChecking = function()
 {
-    if(undefined !== this.Paragraph && null !== this.Paragraph)
+    if(undefined !== this.Paragraph && null !== this.Paragraph
+        && undefined !== this.Paragraph.RecalcInfo && null !== this.Paragraph.RecalcInfo
+        && undefined !== this.Paragraph.RecalcInfo.Set_Type_0_Spell)
         this.Paragraph.RecalcInfo.Set_Type_0_Spell(pararecalc_0_Spell_All);
 };
 CParagraphContentWithContentBase.prototype.Is_UseInDocument = function(Id)

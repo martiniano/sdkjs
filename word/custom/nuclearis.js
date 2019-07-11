@@ -170,48 +170,60 @@ Asc['asc_docs_api'].prototype.nuclearis_removeWatermark = function(){
 }
 
 Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oContent){
-    var _blocks = this.WordControl.m_oLogicDocument.GetAllContentControls();
-    var _ret = [];
-    var _obj = null;
-    for (var i = 0; i < _blocks.length; i++)
-    {
-        _obj = _blocks[i].GetContentControlPr();
-        var oContentControlText = new CParagraphGetText();
-        oContentControlText.SetBreakOnNonText(false);
-        oContentControlText.SetParaEndToSpace(true);
-        _blocks[i].Get_Text(oContentControlText);
+    if(!this.isViewMode){
+        var oApi = this;
+        AscFormat.ExecuteNoHistory(function(obj) {
+            var _blocks = oApi.WordControl.m_oLogicDocument.GetAllContentControls();
+            var _obj = null;
+            for (var i = 0; i < _blocks.length; i++)
+            {
+                _obj = _blocks[i].GetContentControlPr();
+                var oContentControlText = new CParagraphGetText();
+                oContentControlText.SetBreakOnNonText(false);
+                oContentControlText.SetParaEndToSpace(true);
+                _blocks[i].Get_Text(oContentControlText);
 
-        var tag = _obj.Tag.replace(/(m0;|m1;|m2;)/ig, 'm;');
-        var mCase = /m([0-9]);.*/.exec(_obj.Tag)[1];
-        if(oContent && oContent[tag]){
-            var content = oContent[tag];
-            switch(mCase){
-                case 0: //CamelCase
-                    content	= content.toCamelCase();
-                    break;
-                case 1: //UpperCase
-                    content	= content.toUpperCase();
-                    break;
-                case 2: //LowerCase
-                    content	= content.toLowerCase();
-                    break;
-            }
+                var tag = _obj.Tag.replace(/(m0;|m1;|m2;)/ig, 'm;');
+                var mCase = /m([0-9]);.*/.exec(_obj.Tag)[1];
+                if(oContent && oContent[tag]){
+                    var content = oContent[tag];
+                    switch(mCase){
+                        case "0": //CamelCase
+                            content	= oApi.nuclearis_toCamelCase(content);
+                            break;
+                        case "1": //UpperCase
+                            content	= content.toUpperCase();
+                            break;
+                        case "2": //LowerCase
+                            content	= content.toLowerCase();
+                            break;
+                    }
 
-            if(content !== oContentControlText.Text || _.isEmpty(oContentControlText.Text)){
-                console.log(content);
-                _blocks[i].ClearContentControl();
-                _blocks[i].Content[0].AddText(content);
-                //_blocks[i].Add_ToContent(0, oTable);
-                //_blocks[i].Remove_FromContent(1, _blocks[i].GetElementsCount() - 1);
+                    if(content !== oContentControlText.Text || _.isEmpty(oContentControlText.Text)){
+                        console.log(content);
+                        _blocks[i].ClearContentControl();
+                        _blocks[i].Content[0].AddText(content);
+                        //_blocks[i].Add_ToContent(0, oTable);
+                        //_blocks[i].Remove_FromContent(1, _blocks[i].GetElementsCount() - 1);
+                    }
+                }
+                
+                //_ret.push({"Tag" : _obj.Tag, "Id" : _obj.Id, "Lock" : _obj.Lock, "InternalId" : _obj.InternalId});
             }
-        }
-        
-        //_ret.push({"Tag" : _obj.Tag, "Id" : _obj.Id, "Lock" : _obj.Lock, "InternalId" : _obj.InternalId});
+            oApi.asc_Recalculate();
+        });
     }
-    this.asc_Recalculate();
-
-    return _ret;
 }
+
+Asc['asc_docs_api'].prototype.nuclearis_toCamelCase = function(str){
+    var conectivos = ["de", "da", "das", "do", "dos", "por"];
+    if(str && str != ''){
+        return str.toLowerCase().split(' ').map(function(word) {
+            return (conectivos.indexOf(word) === -1 ? word.charAt(0).toUpperCase() + word.slice(1) : word);
+        }).join(' ');
+    }
+    return str;
+};
 
 Asc['asc_docs_api'].prototype["nuclearis_redoSignatures"] = Asc['asc_docs_api'].prototype.nuclearis_redoSignatures;
 Asc['asc_docs_api'].prototype["nuclearis_InsertText"] = Asc['asc_docs_api'].prototype.nuclearis_InsertText;
@@ -222,6 +234,7 @@ Asc['asc_docs_api'].prototype["nuclearis_removeWatermark"]  = Asc['asc_docs_api'
 Asc['asc_docs_api'].prototype["nuclearis_registerCallbacks"]  = Asc['asc_docs_api'].prototype.nuclearis_registerCallbacks;
 Asc['asc_docs_api'].prototype["asc_Print"]  = Asc['asc_docs_api'].prototype.asc_Print;
 Asc['asc_docs_api'].prototype["nuclearis_replaceContentControls"]  = Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls;
+Asc['asc_docs_api'].prototype["nuclearis_toCamelCase"]  = Asc['asc_docs_api'].prototype.nuclearis_toCamelCase;
 
 //window['Asc']['asc_docs_api'].prototype["nuclearis_redoSignatures"] = window['Asc']['asc_docs_api'].prototype.nuclearis_redoSignatures;
  

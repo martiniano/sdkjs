@@ -285,6 +285,9 @@ function private_ParaTextPrChangesOnMergeRFontsValue(oChange)
  */
 function CChangesParaTextPrBold(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseBoolProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrBold.prototype = Object.create(AscDFH.CChangesBaseBoolProperty.prototype);
@@ -301,6 +304,9 @@ CChangesParaTextPrBold.prototype.Merge = private_ParaTextPrChangesOnMergeValue;
  */
 function CChangesParaTextPrItalic(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseBoolProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrItalic.prototype = Object.create(AscDFH.CChangesBaseBoolProperty.prototype);
@@ -317,6 +323,9 @@ CChangesParaTextPrItalic.prototype.Merge = private_ParaTextPrChangesOnMergeValue
  */
 function CChangesParaTextPrStrikeout(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseBoolProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrStrikeout.prototype = Object.create(AscDFH.CChangesBaseBoolProperty.prototype);
@@ -333,6 +342,9 @@ CChangesParaTextPrStrikeout.prototype.Merge = private_ParaTextPrChangesOnMergeVa
  */
 function CChangesParaTextPrUnderline(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseBoolProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrUnderline.prototype = Object.create(AscDFH.CChangesBaseBoolProperty.prototype);
@@ -349,6 +361,9 @@ CChangesParaTextPrUnderline.prototype.Merge = private_ParaTextPrChangesOnMergeVa
  */
 function CChangesParaTextPrFontSize(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseDoubleProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrFontSize.prototype = Object.create(AscDFH.CChangesBaseDoubleProperty.prototype);
@@ -365,6 +380,9 @@ CChangesParaTextPrFontSize.prototype.Merge = private_ParaTextPrChangesOnMergeVal
  */
 function CChangesParaTextPrColor(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseObjectProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrColor.prototype = Object.create(AscDFH.CChangesBaseObjectProperty.prototype);
@@ -385,6 +403,9 @@ CChangesParaTextPrColor.prototype.Merge = private_ParaTextPrChangesOnMergeValue;
  */
 function CChangesParaTextPrVertAlign(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseLongProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrVertAlign.prototype = Object.create(AscDFH.CChangesBaseLongProperty.prototype);
@@ -401,8 +422,8 @@ CChangesParaTextPrVertAlign.prototype.Merge = private_ParaTextPrChangesOnMergeVa
  */
 function CChangesParaTextPrHighLight(Class, Old, New, Color)
 {
-	if(Class.Value === undefined){
-		Class.Value = new CTextPr(); 
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
 	}
 	AscDFH.CChangesBaseProperty.call(this, Class, Old, New, Color);
 }
@@ -500,6 +521,9 @@ CChangesParaTextPrHighLight.prototype.Merge = private_ParaTextPrChangesOnMergeVa
  */
 function CChangesParaTextPrRStyle(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseStringProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrRStyle.prototype = Object.create(AscDFH.CChangesBaseStringProperty.prototype);
@@ -516,6 +540,9 @@ CChangesParaTextPrRStyle.prototype.Merge = private_ParaTextPrChangesOnMergeValue
  */
 function CChangesParaTextPrSpacing(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseDoubleProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrSpacing.prototype = Object.create(AscDFH.CChangesBaseDoubleProperty.prototype);
@@ -532,6 +559,9 @@ CChangesParaTextPrSpacing.prototype.Merge = private_ParaTextPrChangesOnMergeValu
  */
 function CChangesParaTextPrDStrikeout(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseBoolProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrDStrikeout.prototype = Object.create(AscDFH.CChangesBaseBoolProperty.prototype);
@@ -548,6 +578,9 @@ CChangesParaTextPrDStrikeout.prototype.Merge = private_ParaTextPrChangesOnMergeV
  */
 function CChangesParaTextPrCaps(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseBoolProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrCaps.prototype = Object.create(AscDFH.CChangesBaseBoolProperty.prototype);
@@ -564,6 +597,9 @@ CChangesParaTextPrCaps.prototype.Merge = private_ParaTextPrChangesOnMergeValue;
  */
 function CChangesParaTextPrSmallCaps(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseBoolProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrSmallCaps.prototype = Object.create(AscDFH.CChangesBaseBoolProperty.prototype);
@@ -580,6 +616,9 @@ CChangesParaTextPrSmallCaps.prototype.Merge = private_ParaTextPrChangesOnMergeVa
  */
 function CChangesParaTextPrPosition(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseDoubleProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrPosition.prototype = Object.create(AscDFH.CChangesBaseDoubleProperty.prototype);
@@ -596,6 +635,9 @@ CChangesParaTextPrPosition.prototype.Merge = private_ParaTextPrChangesOnMergeVal
  */
 function CChangesParaTextPrValue(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseObjectProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrValue.prototype = Object.create(AscDFH.CChangesBaseObjectProperty.prototype);
@@ -800,6 +842,9 @@ CChangesParaTextPrValue.prototype.Merge = function(oChange)
  */
 function CChangesParaTextPrRFonts(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseObjectProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrRFonts.prototype = Object.create(AscDFH.CChangesBaseObjectProperty.prototype);
@@ -865,6 +910,9 @@ CChangesParaTextPrRFonts.prototype.Merge = function(oChange)
  */
 function CChangesParaTextPrRFontsAscii(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrRFontsAscii.prototype = Object.create(AscDFH.CChangesBaseProperty.prototype);
@@ -949,6 +997,9 @@ CChangesParaTextPrRFontsAscii.prototype.Merge = private_ParaTextPrChangesOnMerge
  */
 function CChangesParaTextPrRFontsHAnsi(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrRFontsHAnsi.prototype = Object.create(AscDFH.CChangesBaseProperty.prototype);
@@ -1033,6 +1084,9 @@ CChangesParaTextPrRFontsHAnsi.prototype.Merge = private_ParaTextPrChangesOnMerge
  */
 function CChangesParaTextPrRFontsCS(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrRFontsCS.prototype = Object.create(AscDFH.CChangesBaseProperty.prototype);
@@ -1117,6 +1171,9 @@ CChangesParaTextPrRFontsCS.prototype.Merge = private_ParaTextPrChangesOnMergeRFo
  */
 function CChangesParaTextPrRFontsEastAsia(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrRFontsEastAsia.prototype = Object.create(AscDFH.CChangesBaseProperty.prototype);
@@ -1201,6 +1258,9 @@ CChangesParaTextPrRFontsEastAsia.prototype.Merge = private_ParaTextPrChangesOnMe
  */
 function CChangesParaTextPrRFontsHint(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseLongProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrRFontsHint.prototype = Object.create(AscDFH.CChangesBaseLongProperty.prototype);
@@ -1217,6 +1277,9 @@ CChangesParaTextPrRFontsHint.prototype.Merge = private_ParaTextPrChangesOnMergeR
  */
 function CChangesParaTextPrLang(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseObjectProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrLang.prototype = Object.create(AscDFH.CChangesBaseObjectProperty.prototype);
@@ -1272,6 +1335,9 @@ CChangesParaTextPrLang.prototype.Merge = function(oChange)
  */
 function CChangesParaTextPrLangBidi(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseLongProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrLangBidi.prototype = Object.create(AscDFH.CChangesBaseLongProperty.prototype);
@@ -1288,6 +1354,9 @@ CChangesParaTextPrLangBidi.prototype.Merge = private_ParaTextPrChangesOnMergeLan
  */
 function CChangesParaTextPrLangEastAsia(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseLongProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrLangEastAsia.prototype = Object.create(AscDFH.CChangesBaseLongProperty.prototype);
@@ -1304,6 +1373,9 @@ CChangesParaTextPrLangEastAsia.prototype.Merge = private_ParaTextPrChangesOnMerg
  */
 function CChangesParaTextPrLangVal(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseLongProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrLangVal.prototype = Object.create(AscDFH.CChangesBaseLongProperty.prototype);
@@ -1320,6 +1392,9 @@ CChangesParaTextPrLangVal.prototype.Merge = private_ParaTextPrChangesOnMergeLang
  */
 function CChangesParaTextPrUnifill(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseObjectProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrUnifill.prototype = Object.create(AscDFH.CChangesBaseObjectProperty.prototype);
@@ -1355,6 +1430,9 @@ CChangesParaTextPrUnifill.prototype.Merge = private_ParaTextPrChangesOnMergeValu
  */
 function CChangesParaTextPrFontSizeCS(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseDoubleProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrFontSizeCS.prototype = Object.create(AscDFH.CChangesBaseDoubleProperty.prototype);
@@ -1371,6 +1449,9 @@ CChangesParaTextPrFontSizeCS.prototype.Merge = private_ParaTextPrChangesOnMergeV
  */
 function CChangesParaTextPrTextOutline(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseObjectProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrTextOutline.prototype = Object.create(AscDFH.CChangesBaseObjectProperty.prototype);
@@ -1391,6 +1472,9 @@ CChangesParaTextPrTextOutline.prototype.Merge = private_ParaTextPrChangesOnMerge
  */
 function CChangesParaTextPrTextFill(Class, Old, New, Color)
 {
+	if(undefined === Class.Value && Class.Get_TextPr !== undefined){
+		Class.Value = Class.Get_TextPr();
+	}
 	AscDFH.CChangesBaseObjectProperty.call(this, Class, Old, New, Color);
 }
 CChangesParaTextPrTextFill.prototype = Object.create(AscDFH.CChangesBaseObjectProperty.prototype);
