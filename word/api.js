@@ -6251,7 +6251,7 @@ background-repeat: no-repeat;\
 			if (this.LoadedObject)
 			{
 					var Document = this.WordControl.m_oLogicDocument;
-
+				
 					if (this.isApplyChangesOnOpenEnabled)
 					{
 						this.isApplyChangesOnOpenEnabled = false;
@@ -6407,6 +6407,11 @@ background-repeat: no-repeat;\
 
 	asc_docs_api.prototype.openDocument = function(sData)
 	{
+		if(!this.documentUrlChanges && sData.changes == null){
+			sData.changes = [];
+			sData.changes[0] = ["34;workaround"];
+		}
+
 		if (sData.changes && this.VersionHistory)
 		{
 			this.VersionHistory.changes = sData.changes;

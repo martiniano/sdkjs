@@ -61,7 +61,7 @@
       this.url = newObj.url;
       this.urlChanges = newObj.urlChanges;
       this.currentChangeId = -1;
-      this.changes = null;
+      this.changes = [];
 	  this.token = newObj.token;
     }
     this.colors = newObj.colors;
