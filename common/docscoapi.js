@@ -1574,6 +1574,7 @@
       }
       this._locks = {};
     }
+
     this._send({
       'type': 'auth',
       'docid': this._docid,
@@ -1634,7 +1635,8 @@
 		if (this.reconnectTimeout) {
 			clearTimeout(this.reconnectTimeout);
 			this.reconnectTimeout = null;
-			this.attemptCount = 0;
+      this.attemptCount = 0;
+      this._locks = {};
 		}
 
 		this._state = ConnectionState.WaitAuth;

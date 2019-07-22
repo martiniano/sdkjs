@@ -1,14 +1,18 @@
-
+/**
+ *    nuclearis.js
+ *
+ *    Created by Anderson Martiniano on 24 July 2018
+ *    Copyright (c) 2018 Nuclearis LTDA. All rights reserved.
+ *
+ */
 
 Asc['asc_docs_api'].prototype.nuclearis_registerCallbacks = function() 
 {
-    
     var me = this;
 
     this.asc_registerCallback('asc_onPrintUrl', function(url){
         me.nuclearis_removeWatermark();
     });
-
 }
 
 Asc['asc_docs_api'].prototype.nuclearis_redoSignatures = function() 
@@ -538,6 +542,8 @@ Asc['asc_docs_api'].prototype.nuclearis_insertSignature = function(data, signatu
     var logicDocument =  this.WordControl.m_oLogicDocument;
     var contentControls = this.pluginMethod_GetAllContentControls();
     var oApi = this;
+
+    logicDocument.Create_NewHistoryPoint(AscDFH.historydescription_Document_InsertSignatureLine);
 
     var assinaturaContentControl = null;
     contentControls.forEach(function(control)
