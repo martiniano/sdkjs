@@ -183,14 +183,16 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oConte
 {
     if( !this.isViewMode )
     {
+        var LogicDocument = this.WordControl.m_oLogicDocument;
         var oApi = this;
         var _blocks = oApi.WordControl.m_oLogicDocument.GetAllContentControls();
         var _obj = null;
         for ( var i = 0; i < _blocks.length; i++ )
         {
+            _obj = _blocks[i].GetContentControlPr();
+
            if ( _blocks[i] instanceof CInlineLevelSdt )
            {
-                _obj = _blocks[i].GetContentControlPr();
                 var oContentControlText = new CParagraphGetText();
                 oContentControlText.SetBreakOnNonText(false);
                 oContentControlText.SetParaEndToSpace(true);
@@ -223,11 +225,92 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oConte
                     }
                 }
            } else if ( _blocks[i] instanceof CBlockLevelSdt ){
-               console.log("Block Level")
+               console.log("Block Level");
+               var tag = _obj.Tag;
+               if ( oContent && oContent[tag] )
+               {
+                    var _isReplaced = true;
+                    _blockStd   = LogicDocument.ClearContentControl(_obj.InternalId);
+                    _isReplaced = true;
+
+                    if (c_oAscSdtLevelType.Block === _blockStd.GetContentControlType())
+                    {
+                        if (_isReplaced)
+                        {
+                            if (_blockStd.Content.GetElementsCount() > 1)
+                                _blockStd.Content.Remove_FromContent(_blockStd.Content.GetElementsCount() - 1, 1);
+
+                            _blockStd.MoveCursorToStartPos(false);
+                        }
+                        else
+                        {
+                            if (_blockStd.Content.GetElementsCount() > 1)
+                            {
+                                _blockStd.Content.Remove_FromContent(_blockStd.Content.GetElementsCount() - 1, 1);
+                                _blockStd.MoveCursorToEndPos(false, false);
+                            }
+                            LogicDocument.MoveCursorRight(false, false, true);
+                        }
+                    }
+
+                    // insert/replace script
+                    var _script = "(function(){ var Api = window.g_asc_plugins.api;\n" + oContent[tag] + "\n})();";
+                    eval(_script);
+
+               }
            }
        
         }
-        oApi.asc_Recalculate();
+
+        var _fonts         = LogicDocument.Document_Get_AllFontNames();
+        var _imagesArray   = LogicDocument.Get_AllImageUrls();
+        var _images        = {};
+        for (var i = 0; i < _imagesArray.length; i++)
+        {
+            _images[_imagesArray[i]] = _imagesArray[i];
+        }
+
+        window.g_asc_plugins.images_rename = _images;
+        AscCommon.Check_LoadingDataBeforePrepaste(window.g_asc_plugins.api, _fonts, _images,
+        function()
+        {
+            var urls = [];
+            Object.entries(AscCommon.g_oDocumentUrls.getUrls()).forEach(([key, value]) => {
+                console.log(key + ' ' + value);  
+                if(key.startsWith("media")){
+                    urls.push(value);
+                }
+            });
+
+            if( oApi.ImageLoader )
+            {
+                oApi.ImageLoader.LoadImagesWithCallback(urls, function()
+                {
+                    var oDoc =  oApi.WordControl.m_oLogicDocument;
+                    oDoc.Create_NewHistoryPoint(AscDFH.historydescription_Document_AddImageToPage);
+
+                    for( var i = 0; i < urls.length; ++i )
+                    {
+                        var _image = oApi.ImageLoader.LoadImage(urls[i], 1);
+                        if( _image )
+                        {
+                            console.log(_image)
+                        }
+                    }
+
+                    oApi.asc_Recalculate();
+                }, []);
+            }   
+
+            var _api = window.g_asc_plugins.api;
+            delete window.g_asc_plugins.images_rename;
+            _api.asc_Recalculate();
+            _api.WordControl.m_oLogicDocument.UnlockPanelStyles(true);
+        });
+
+        //LogicDocument.MoveCursorToStartPos(false);
+
+        //oApi.asc_Recalculate();
     }
 }
 
@@ -272,9 +355,21 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceAll = function(str, token, newtok
 
 Asc['asc_docs_api'].prototype.nuclearis_writeTranscriptedText = function(event)
 {
-    console.log("Result Recognition", event);
+    //console.log("Result Recognition", event);
     var logicalDocument = this.WordControl.m_oLogicDocument;
     var paraRun = logicalDocument.Get_DocumentPositionInfoForCollaborative();
+    
+    if ( paraRun.Class.Selection != null && paraRun.Class.IsSelectionUse() )
+    {
+        var startPos = Math.min(paraRun.Class.Selection.StartPos, paraRun.Class.Selection.EndPos);
+        var endPos = Math.max(paraRun.Class.Selection.StartPos, paraRun.Class.Selection.EndPos);
+        paraRun.Class.Remove_FromContent(startPos, (endPos - startPos), false);
+        paraRun.Position = startPos;
+        paraRun.Class.SetCursorPosition(startPos);
+        paraRun.Class.RemoveSelection();
+        logicalDocument.Recalculate();
+    }
+    
     var texto = "";
     var textoTemp = "";
 
@@ -282,6 +377,8 @@ Asc['asc_docs_api'].prototype.nuclearis_writeTranscriptedText = function(event)
 
     for ( var i = event["resultIndex"]; i < event["results"].length; ++i ) 
     {
+        console.log(event["results"][i][0]["transcript"]);
+
         if ( event["results"][i]["isFinal"] ) 
         {
             texto += event["results"][i][0]["transcript"];
@@ -303,10 +400,22 @@ Asc['asc_docs_api'].prototype.nuclearis_writeTranscriptedText = function(event)
 
             textoTemp += event["results"][i][0]["transcript"];
             textoTemp = this.nuclearis_replaceAll(textoTemp, "\n", "nova linha");
-            paraRun.Class.Remove_FromContent(this.vr_paraRunInitialPosition, this.vr_paraRunFinalPosition, true);
-            paraRun.Class.AddText(textoTemp, this.vr_paraRunInitialPosition);
-            paraRun.Class.MoveCursorToEndPos(false);
-            this.vr_paraRunFinalPosition = textoTemp.length;
+            if( (this.vr_paraRunFinalPosition - this.vr_paraRunInitialPosition) > 0 )
+            {
+                paraRun.Class.Remove_FromContent(this.vr_paraRunInitialPosition, (this.vr_paraRunFinalPosition - this.vr_paraRunInitialPosition), true);
+            }
+
+            if( paraRun.Class.IsCursorAtEnd() )
+            {
+                paraRun.Class.AddText(textoTemp);
+                paraRun.Class.MoveCursorToEndPos(false);
+            }
+            else
+            {
+                paraRun.Class.AddText(textoTemp, this.vr_paraRunInitialPosition);
+            }
+
+            this.vr_paraRunFinalPosition = this.vr_paraRunInitialPosition + textoTemp.length;
         
             logicalDocument.Recalculate();
         }
@@ -345,7 +454,7 @@ Asc['asc_docs_api'].prototype.nuclearis_writeTranscriptedText = function(event)
     }
 
     var textoArray = texto.split("{$}");
-    paraRun.Class.Remove_FromContent(this.vr_paraRunInitialPosition, this.vr_paraRunFinalPosition, true);
+    paraRun.Class.Remove_FromContent(this.vr_paraRunInitialPosition, (this.vr_paraRunFinalPosition - this.vr_paraRunInitialPosition), true);
     for( var i=0; i < textoArray.length; i++ )
     {
         var param = textoArray[i];
@@ -353,6 +462,8 @@ Asc['asc_docs_api'].prototype.nuclearis_writeTranscriptedText = function(event)
         {
             logicalDocument.AddNewParagraph(true, true);
             paraRun = logicalDocument.Get_DocumentPositionInfoForCollaborative();
+            // this.vr_paraRunInitialPosition = paraRun.Position;
+            // this.vr_paraRunFinalPosition = this.vr_paraRunInitialPosition;
         } 
         else if( param === "newLine" ) 
         {
@@ -363,24 +474,65 @@ Asc['asc_docs_api'].prototype.nuclearis_writeTranscriptedText = function(event)
         {
             if( param.length > 0 )
             {
-                paraRun.Class.AddText(param);
-                paraRun.Class.MoveCursorToEndPos(false);
+                if( paraRun.Class.IsCursorAtEnd() )
+                {
+                    paraRun.Class.AddText(param);
+                    paraRun.Class.MoveCursorToEndPos(false);
+                } else
+                {
+                    paraRun.Class.AddText(param, this.vr_paraRunInitialPosition);
+                }
             }
 
             //Retira o espaço em branco do Inicio do Paragrafo
             if( paraRun.Class.Content.length > 0 && paraRun.Class.Content[0].Type == AscCommonWord.ParaSpace.prototype.Get_Type() )
             {
-                paraRun.Class.Remove_FromContent(0, 1, true);
-                paraRun.Class.MoveCursorToEndPos(false);
+                paraRun.Class.Remove_FromContent(0, 1, false);
+                this.vr_paraRunFinalPosition--;
+                //paraRun.Class.MoveCursorToEndPos(false);
+                paraRun.Class.SetCursorPosition(this.vr_paraRunFinalPosition);
             }
 
-            //Altera primeira letra para maiusculo
-            if( paraRun.Class.Content.length > 0 && paraRun.Class.Content[0].Type == AscCommonWord.ParaText.prototype.Get_Type() )
-            {
-                var letter = String.fromCharCode(paraRun.Class.Content[0].Value);
-                paraRun.Class.Remove_FromContent(0, 1, true);
-                paraRun.Class.AddText(letter.toUpperCase(), 0);
-                paraRun.Class.MoveCursorToEndPos(false);
+            //Altera primeira letra do período para maiusculo
+            if( paraRun.Class.Is_UseInParagraph() && paraRun.Class.Content.length > 0 ){
+                var contentPos = paraRun.Class.GetPosInParent();
+                if ( contentPos == 0 ){
+                    if( paraRun.Class.Content[0].Type == AscCommonWord.ParaText.prototype.Get_Type() )
+                    {
+                        var letter = String.fromCharCode(paraRun.Class.Content[0].Value);
+                        paraRun.Class.Remove_FromContent(0, 1, false);
+                        paraRun.Class.AddText(letter.toUpperCase(), 0);
+                        //paraRun.Class.MoveCursorToEndPos(false);
+                    }
+                }
+
+                for( var p = paraRun.Class.GetElementsCount() -1 ; p >= 0 ; p-- ) 
+                {
+                    if(paraRun.Class.Content[p].Type == AscCommonWord.ParaText.prototype.Get_Type() )
+                    {
+                        var letter = String.fromCharCode(paraRun.Class.Content[p].Value);
+                        if( letter == '.' )
+                        {
+                            var a = p + 1;
+                            while( a < paraRun.Class.GetElementsCount() && 
+                                paraRun.Class.Content[a].Type == AscCommonWord.ParaSpace.prototype.Get_Type() )
+                            {
+                                a++;
+                            }
+
+                            if( a < paraRun.Class.GetElementsCount() )
+                            {
+                                if( paraRun.Class.Content[a].Type == AscCommonWord.ParaText.prototype.Get_Type() )
+                                {
+                                    var afterLetter = String.fromCharCode(paraRun.Class.Content[a].Value);
+                                    paraRun.Class.Remove_FromContent(a, 1, false);
+                                    paraRun.Class.AddText(afterLetter.toUpperCase(), a);
+                                    //paraRun.Class.MoveCursorToEndPos(false);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -446,7 +598,7 @@ Asc['asc_docs_api'].prototype.nuclearis_uploadAndInsertImage = function(file)
             {
                 oApi.ImageLoader.LoadImagesWithCallback(urls, function()
                 {
-                    var oDoc =  _mainController.api.WordControl.m_oLogicDocument;
+                    var oDoc =  oApi.WordControl.m_oLogicDocument;
                     oDoc.Create_NewHistoryPoint(AscDFH.historydescription_Document_AddImageToPage);
                     var positionRun = oDoc.Get_DocumentPositionInfoForCollaborative();
                     if ( null != positionRun ) 
@@ -566,7 +718,7 @@ Asc['asc_docs_api'].prototype.nuclearis_insertSignature = function(data, signatu
         var _obj = oApi.asc_AddContentControl(type, _content_control_pr);
         if ( !_obj )
             return undefined;
-
+            renderizarBotaoReabrirLaudo
         logicDocument.ClearContentControl(_obj.InternalId);
 
         this.nuclearis_redoSignatures();
