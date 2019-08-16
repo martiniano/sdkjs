@@ -20,7 +20,8 @@ Asc['asc_docs_api'].prototype.nuclearis_redoSignatures = function()
     var me = this;
 
     var logicDocument =  me.WordControl.m_oLogicDocument;
-    var contentControls = me.pluginMethod_GetAllContentControls();
+    //var contentControls = me.pluginMethod_GetAllContentControls();
+    var contentControls = this["pluginMethod_GetAllContentControls"]();
 
     var assinaturaContentControl = null;
     contentControls.forEach(function(control){
@@ -199,7 +200,8 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oConte
                 _blocks[i].Get_Text(oContentControlText);
 
                 var tag = _obj.Tag.replace(/(m0;|m1;|m2;)/ig, 'm;');
-                var mCase = /m([0-9]);.*/.exec(_obj.Tag)[1];
+                var execResult = /m([0-9]);.*/.exec(_obj.Tag);
+                var mCase = execResult != null && execResult.length > 1 ? execResult[1] : "0";
                 if ( oContent && oContent[tag] )
                 {
                     var content = oContent[tag];
@@ -213,6 +215,9 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oConte
                             break;
                         case "2": //LowerCase
                             content	= content.toLowerCase();
+                            break;
+                        default: //CamelCase
+                            content	= oApi.nuclearis_toCamelCase(content);
                             break;
                     }
 
@@ -262,6 +267,7 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oConte
        
         }
 
+        /*
         var _fonts         = LogicDocument.Document_Get_AllFontNames();
         var _imagesArray   = LogicDocument.Get_AllImageUrls();
         var _images        = {};
@@ -307,10 +313,10 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oConte
             _api.asc_Recalculate();
             _api.WordControl.m_oLogicDocument.UnlockPanelStyles(true);
         });
+        */
+        LogicDocument.MoveCursorToStartPos(false);
 
-        //LogicDocument.MoveCursorToStartPos(false);
-
-        //oApi.asc_Recalculate();
+        oApi.asc_Recalculate();
     }
 }
 
@@ -692,7 +698,7 @@ Asc['asc_docs_api'].prototype.nuclearis_uploadAndInsertSignatureImage = function
 Asc['asc_docs_api'].prototype.nuclearis_insertSignature = function(data, signaturesPerLine)
 {
     var logicDocument =  this.WordControl.m_oLogicDocument;
-    var contentControls = this.pluginMethod_GetAllContentControls();
+    var contentControls = this["pluginMethod_GetAllContentControls"]();
     var oApi = this;
 
     logicDocument.Create_NewHistoryPoint(AscDFH.historydescription_Document_InsertSignatureLine);
@@ -700,9 +706,9 @@ Asc['asc_docs_api'].prototype.nuclearis_insertSignature = function(data, signatu
     var assinaturaContentControl = null;
     contentControls.forEach(function(control)
     {
-        if( control.Tag == 'ASSINATURAS' )
+        if( control['Tag'] == 'ASSINATURAS' )
         {   
-            assinaturaContentControl = logicDocument.GetContentControl(control.InternalId);
+            assinaturaContentControl = logicDocument.GetContentControl(control['InternalId']);
         }
     });
 
@@ -712,18 +718,17 @@ Asc['asc_docs_api'].prototype.nuclearis_insertSignature = function(data, signatu
         var type = c_oAscSdtLevelType.Block; //Block
         
         var _content_control_pr = new AscCommon.CContentControlPr();
-        _content_control_pr.Tag = "ASSINATURAS";
-        _content_control_pr.Lock = 3;
+        _content_control_pr['Tag'] = "ASSINATURAS";
+        _content_control_pr['Lock'] = 3;
 
         var _obj = oApi.asc_AddContentControl(type, _content_control_pr);
         if ( !_obj )
             return undefined;
-            renderizarBotaoReabrirLaudo
-        logicDocument.ClearContentControl(_obj.InternalId);
+        logicDocument.ClearContentControl(_obj['InternalId']);
 
         this.nuclearis_redoSignatures();
 
-        assinaturaContentControl = logicDocument.GetContentControl(_obj.InternalId);
+        assinaturaContentControl = logicDocument.GetContentControl(_obj['InternalId']);
     }       
 
     var tableElement = assinaturaContentControl.Content.GetElement(0);
@@ -841,7 +846,7 @@ Asc['asc_docs_api'].prototype.nuclearis_insertSignatureBlock = function(oParagra
     }
     
     for( var i = 0; i < extras.length;i++ )
-    {
+    {   
         var oRun = this.CreateRun();
         oRun.SetColor(0, 0, 0);
         oRun.AddText(extras[i]);
@@ -871,12 +876,14 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceShortcut = function(shortcut, sho
         paraRun.Class.Selection.EndPos   = _buffer.endPos;
 
         //var selectedText = Doc.GetSelectedText();
+
+        this.WordControl.m_oLogicDocument.Create_NewHistoryPoint();
         
         paraRun.Class.Remove_FromContent(_buffer.startPos, shortcut.length, true);
         paraRun.Class.AddText(shortcut_value, _buffer.startPos);
         paraRun.Class.Paragraph.Document_SetThisElementCurrent(true);
         paraRun.Class.MoveCursorToEndPos(false);
-        paraRun.Class.State.ContentPos = (_buffer.startPos + shortcut_value.length + 1);
+        //paraRun.Class.State.ContentPos = (_buffer.startPos + shortcut_value.length + 1);
 
         paraRun.Class.RemoveSelection();
 

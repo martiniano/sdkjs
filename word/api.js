@@ -2333,6 +2333,10 @@ background-repeat: no-repeat;\
 			this.lastSaveTime = _curTime;
 		}
 
+		if (null === this.lastHistoryIndex) {
+			this.lastHistoryIndex = History.Index;
+		}
+
 		if (AscCommon.CollaborativeEditing.Is_Fast() && !AscCommon.CollaborativeEditing.Is_SingleUser()) {
 			this.WordControl.m_oLogicDocument.Continue_FastCollaborativeEditing();
 		} else {
@@ -2348,8 +2352,10 @@ background-repeat: no-repeat;\
 					this.autoSaveGapFast;
 
 				if ((_curTime - this.lastSaveTime) > _interval) {
-					if (History.Have_Changes(true) == true) {
-						this.asc_Save(true);
+					if (History.Have_Changes(false) == true && (History.Index - this.lastHistoryIndex) > this.minLengthOfChanges) {
+						console.log('chamando asc_Save('+!this.forceSaveOnAutoSave+')');
+						this.asc_Save(!this.forceSaveOnAutoSave);
+						this.lastHistoryIndex = History.Index;
 					}
 					this.lastSaveTime = _curTime;
 				}
@@ -8864,6 +8870,48 @@ background-repeat: no-repeat;\
 		return defaultSize;
 	};
 
+	//Nuclearis
+	asc_docs_api.prototype.asc_setAutoSaveInterval = function(autoSaveInterval)
+	{
+		if (typeof autoSaveInterval === "number")
+		{
+			this.autoSaveInterval = autoSaveInterval;
+		}
+	};
+
+	//Nuclearis
+	asc_docs_api.prototype.asc_getAutoSaveInterval = function()
+	{
+		return this.autoSaveInterval;
+	};
+
+	//Nuclearis
+	asc_docs_api.prototype.asc_setForceSaveOnAutoSave = function(forceSaveOnAutoSave)
+	{
+		this.forceSaveOnAutoSave = forceSaveOnAutoSave;
+	};
+
+	//Nuclearis
+	asc_docs_api.prototype.asc_getForceSaveOnAutoSave = function()
+	{
+		return this.forceSaveOnAutoSave;
+	};
+
+	//Nuclearis
+	asc_docs_api.prototype.asc_setMinLengthOfChanges = function(minLengthOfChanges)
+	{
+		if (typeof minLengthOfChanges === "number")
+		{
+			this.minLengthOfChanges = minLengthOfChanges;
+		}
+	};
+
+	//Nuclearis
+	asc_docs_api.prototype.asc_getMinLengthOfChanges = function()
+	{
+		return this.minLengthOfChanges;
+	};
+
 	window["AscDesktopEditor_Save"] = function()
 	{
 		return editor.asc_Save(false);
@@ -9438,6 +9486,14 @@ background-repeat: no-repeat;\
 	// passwords
 	asc_docs_api.prototype["asc_setCurrentPassword"] 					= asc_docs_api.prototype.asc_setCurrentPassword;
 	asc_docs_api.prototype["asc_resetPassword"] 						= asc_docs_api.prototype.asc_resetPassword;
+
+	//Nuclearis
+	asc_docs_api.prototype["asc_setAutoSaveInterval"] 					= asc_docs_api.prototype.asc_setAutoSaveInterval;
+	asc_docs_api.prototype["asc_getAutoSaveInterval"] 					= asc_docs_api.prototype.asc_getAutoSaveInterval;
+	asc_docs_api.prototype["asc_setForceSaveOnAutoSave"] 				= asc_docs_api.prototype.asc_setForceSaveOnAutoSave;
+	asc_docs_api.prototype["asc_getForceSaveOnAutoSave"] 				= asc_docs_api.prototype.asc_getForceSaveOnAutoSave;
+	asc_docs_api.prototype["asc_setMinLengthOfChanges"] 				= asc_docs_api.prototype.asc_setMinLengthOfChanges;
+	asc_docs_api.prototype["asc_getMinLengthOfChanges"] 				= asc_docs_api.prototype.asc_getMinLengthOfChanges;
 
 	CDocInfoProp.prototype['get_PageCount']             = CDocInfoProp.prototype.get_PageCount;
 	CDocInfoProp.prototype['put_PageCount']             = CDocInfoProp.prototype.put_PageCount;

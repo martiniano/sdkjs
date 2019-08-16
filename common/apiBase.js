@@ -104,6 +104,9 @@
 		this.autoSaveGapSlow = 10 * 60 * 1000;	// Интервал медленного автосохранения (когда совместно) - 10 минут
 		this.intervalWaitAutoSave = 1000;
 
+		//Nuclearis
+		this.lastHistoryIndex = null;	
+
 		// Unlock document
 		this.canUnlockDocument = false;
 		this.canUnlockDocument2 = false;		// Дублирующий флаг, только для saveChanges или unLockDocument
@@ -185,6 +188,11 @@
 		//config['watermark_on_draw'] = window.TEST_WATERMARK_STRING;
 		this.watermarkDraw =
 			config['watermark_on_draw'] ? new AscCommon.CWatermarkOnDraw(config['watermark_on_draw']) : null;
+
+		//Nuclearis
+		this.autoSaveInterval = 5000;
+		this.forceSaveOnAutoSave = true;
+		this.minLengthOfChanges = 20;
 
 		return this;
 	}
@@ -525,7 +533,7 @@
 		var t = this;
 		this.isDocumentLoadComplete = true;
 		if (!window['IS_NATIVE_EDITOR']) {
-			setInterval(function() {t._autoSave();}, 40);
+			setInterval(function() {t._autoSave();}, this.autoSaveInterval);
 		}
 		this.sync_EndAction(c_oAscAsyncActionType.BlockInteraction, c_oAscAsyncAction.Open);
 		this.sendEvent('asc_onDocumentContentReady');
