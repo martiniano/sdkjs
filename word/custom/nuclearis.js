@@ -223,6 +223,7 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oConte
 
                     if( content !== oContentControlText.Text || oApi.nuclearis_isEmpty(oContentControlText.Text) )
                     {
+                        LogicDocument.Create_NewHistoryPoint();
                         _blocks[i].ClearContentControl();
                         _blocks[i].Content[0].AddText(content);
                         //_blocks[i].Add_ToContent(0, oTable);
@@ -259,6 +260,7 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oConte
                     }
 
                     // insert/replace script
+                    LogicDocument.Create_NewHistoryPoint();
                     var _script = "(function(){ var Api = window.g_asc_plugins.api;\n" + oContent[tag] + "\n})();";
                     eval(_script);
 
