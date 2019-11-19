@@ -5,6 +5,11 @@
  *    Copyright (c) 2018 Nuclearis LTDA. All rights reserved.
  *
  */
+Asc['asc_docs_api'].prototype.nuclearis_setMode = function(mode) 
+{
+    var me = this;
+    me.nuclearis_mode = mode;
+}
 
 Asc['asc_docs_api'].prototype.nuclearis_registerCallbacks = function() 
 {
@@ -122,7 +127,7 @@ Asc['asc_docs_api'].prototype.asc_Print = function(bIsDownloadEvent)
         }
     }
 
-    if( !this.isViewMode ){
+    if( !this.isViewMode && me.nuclearis_mode == 'edit'){
         this.nuclearis_addWatermark();
     }
 
@@ -188,6 +193,9 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oConte
         var oApi = this;
         var _blocks = oApi.WordControl.m_oLogicDocument.GetAllContentControls();
         var _obj = null;
+
+        LogicDocument.Create_NewHistoryPoint();
+
         for ( var i = 0; i < _blocks.length; i++ )
         {
             _obj = _blocks[i].GetContentControlPr();
@@ -223,7 +231,7 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oConte
 
                     if( content !== oContentControlText.Text || oApi.nuclearis_isEmpty(oContentControlText.Text) )
                     {
-                        LogicDocument.Create_NewHistoryPoint();
+                        //LogicDocument.Create_NewHistoryPoint();
                         _blocks[i].ClearContentControl();
                         _blocks[i].Content[0].AddText(content);
                         //_blocks[i].Add_ToContent(0, oTable);
@@ -260,7 +268,7 @@ Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls = function(oConte
                     }
 
                     // insert/replace script
-                    LogicDocument.Create_NewHistoryPoint();
+                    //LogicDocument.Create_NewHistoryPoint();
                     var _script = "(function(){ var Api = window.g_asc_plugins.api;\n" + oContent[tag] + "\n})();";
                     eval(_script);
 
@@ -842,9 +850,12 @@ Asc['asc_docs_api'].prototype.nuclearis_insertSignatureBlock = function(oParagra
     if( data.image && data.image !== null && data.image !== '' )
     {
         var oAssinatura = this.CreateImage(data.image, imageWidth, imageHeight);
-        oAssinatura.SetWrappingStyle('topAndBottom');
-        oAssinatura.SetHorAlign("column", "center");
+        oAssinatura.SetWrappingStyle('inline');
+        //oAssinatura.SetHorAlign("column", "center");
+        //oAssinatura.SetVerAlign("line", "top");
+        //oAssinatura.Drawing.Set_AllowOverlap(false);
         oParagraph.AddDrawing(oAssinatura);
+        oParagraph.AddLineBreak();
     }
     
     for( var i = 0; i < extras.length;i++ )
@@ -978,3 +989,6 @@ Asc['asc_docs_api'].prototype["nuclearis_insertSignature"]  = Asc['asc_docs_api'
 Asc['asc_docs_api'].prototype["nuclearis_replaceShortcut"]  = Asc['asc_docs_api'].prototype.nuclearis_replaceShortcut;
 Asc['asc_docs_api'].prototype["nuclearis_searchShortcut"]  = Asc['asc_docs_api'].prototype.nuclearis_searchShortcut;
 Asc['asc_docs_api'].prototype["nuclearis_emulateKeyDownApi"]  = Asc['asc_docs_api'].prototype.nuclearis_emulateKeyDownApi;
+Asc['asc_docs_api'].prototype["nuclearis_setMode"]  = Asc['asc_docs_api'].prototype.nuclearis_setMode;
+
+
