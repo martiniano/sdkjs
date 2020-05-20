@@ -448,7 +448,7 @@ Asc['asc_docs_api'].prototype.nuclearis_writeTranscriptedText = function(event)
     }
 
     var pontoNewText = "";
-    const pontoSplit = texto.split(".");
+    var pontoSplit = texto.split(".");
     if( pontoSplit.length > 2 ) 
     {
         for ( var i = 0; i < pontoSplit.length; i++ ) 
@@ -594,6 +594,7 @@ Asc['asc_docs_api'].prototype.nuclearis_getDocumentPositionInfoForCollaborative 
     return this.WordControl.m_oLogicDocument.Get_DocumentPositionInfoForCollaborative();
 }
 
+
 Asc['asc_docs_api'].prototype.nuclearis_uploadAndInsertImage = function(file)
 {
     var oApi            = this;
@@ -627,7 +628,7 @@ Asc['asc_docs_api'].prototype.nuclearis_uploadAndInsertImage = function(file)
                             if( _image )
                             {
                                 var oImage = oApi.CreateImage(urls[i], EMU_PER_PIXEL * _image.Image.width, EMU_PER_PIXEL * _image.Image.height);
-                                oImage.SetWrappingStyle('topAndBottom');
+                                oImage.SetWrappingStyle('inline');
                                 oRun.Add_ToContent(positionRun.Position, oImage.Drawing);
                             }
                         }
@@ -665,6 +666,46 @@ Asc['asc_docs_api'].prototype.nuclearis_removeMeasurementHyperlink = function(hy
         this.asc_Recalculate();
     }
 }
+
+Asc['asc_docs_api'].prototype.nuclearis_uploadImageFiles = function(files, callback)
+{
+
+    var Api             = this;
+    var documentId      = Api.DocInfo.get_Id();
+    var documentUserId  = Api.DocInfo.get_UserId();
+    var jwt             = Api.CoAuthoringApi.get_jwt();
+
+    AscCommon.UploadImageFiles(files, documentId, documentUserId, jwt, function(error, urls)
+    {
+        if ( Asc.c_oAscError.ID.No !== error )
+        {
+            Api.sendEvent("asc_onError", error, Asc.c_oAscError.Level.NoCritical);
+        }
+        else
+        {
+            if( Api.ImageLoader )
+            {
+                var oApi = Api;
+                Api.ImageLoader.LoadImagesWithCallback(urls, function()
+                {
+                    var aImages = [];
+                    for( var i = 0; i < urls.length; ++i )
+                    {
+                        var _image = oApi.ImageLoader.LoadImage(urls[i], 1);
+                        if( _image )
+                        {
+                            aImages.push(urls[i]);
+                        }
+                    }
+
+                    if ( callback )
+                        callback(aImages);
+                }, []);
+            }
+        }
+    });
+}
+
 
 Asc['asc_docs_api'].prototype.nuclearis_uploadAndInsertSignatureImage = function(file, callback)
 {
@@ -985,6 +1026,7 @@ Asc['asc_docs_api'].prototype["nuclearis_getDocumentPositionInfoForCollaborative
 Asc['asc_docs_api'].prototype["nuclearis_uploadAndInsertImage"]  = Asc['asc_docs_api'].prototype.nuclearis_uploadAndInsertImage;
 Asc['asc_docs_api'].prototype["nuclearis_removeMeasurementHyperlink"]  = Asc['asc_docs_api'].prototype.nuclearis_removeMeasurementHyperlink;
 Asc['asc_docs_api'].prototype["nuclearis_uploadAndInsertSignatureImage"]  = Asc['asc_docs_api'].prototype.nuclearis_uploadAndInsertSignatureImage;
+Asc['asc_docs_api'].prototype["nuclearis_uploadImageFiles"]  = Asc['asc_docs_api'].prototype.nuclearis_uploadImageFiles;
 Asc['asc_docs_api'].prototype["nuclearis_insertSignature"]  = Asc['asc_docs_api'].prototype.nuclearis_insertSignature;
 Asc['asc_docs_api'].prototype["nuclearis_replaceShortcut"]  = Asc['asc_docs_api'].prototype.nuclearis_replaceShortcut;
 Asc['asc_docs_api'].prototype["nuclearis_searchShortcut"]  = Asc['asc_docs_api'].prototype.nuclearis_searchShortcut;
