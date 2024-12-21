@@ -5,10 +5,6 @@
  *    Copyright (c) 2018 Nuclearis LTDA. All rights reserved.
  *
  */
-Asc['asc_docs_api'].prototype.nuclearis_setMode = function (mode) {
-  var me = this;
-  me.nuclearis_mode = mode;
-}
 
 Asc['asc_docs_api'].prototype.nuclearis_registerCallbacks = function () {
   var me = this;
@@ -22,13 +18,12 @@ Asc['asc_docs_api'].prototype.nuclearis_redoSignatures = function () {
   var me = this;
 
   var logicDocument = me.WordControl.m_oLogicDocument;
-  //var contentControls = me.pluginMethod_GetAllContentControls();
   var contentControls = this["pluginMethod_GetAllContentControls"]();
 
   var assinaturaContentControl = null;
   contentControls.forEach(function (control) {
-    if (control.Tag == "ASSINATURAS") {
-      assinaturaContentControl = logicDocument.GetContentControl(control.InternalId);
+    if (control["Tag"] == "ASSINATURAS") {
+      assinaturaContentControl = logicDocument.GetContentControl(control["InternalId"]);
       var oTable = new CTable(logicDocument.GetDrawingDocument(), logicDocument, true, 1, 1, [], false);
       oTable.CorrectBadGrid();
       oTable.Set_TableW(tblwidth_Pct, 100);
@@ -41,10 +36,7 @@ Asc['asc_docs_api'].prototype.nuclearis_redoSignatures = function () {
       assinaturaContentControl.Content.Add_ToContent(0, oTable);
       assinaturaContentControl.Content.Remove_FromContent(1, assinaturaContentControl.Content.GetElementsCount() - 1);
       oTable.Recalculate();
-      //oTable.private_UpdateCellsGrid();
       me.asc_Recalculate();
-      //oTable.private_RecalculateGrid();
-      //oTable.private_UpdateCellsGrid();
     }
   });
 };
@@ -99,27 +91,26 @@ Asc['asc_docs_api'].prototype.nuclearis_AddLineBreak = function () {
 */
 
 //Override asc_Print
-Asc['asc_docs_api'].prototype.asc_Print = function (bIsDownloadEvent) {
+Asc['asc_docs_api'].prototype.asc_Print = function (options) {
   var me = this;
 
-  if (window["AscDesktopEditor"]) {
-    if (null != this.WordControl.m_oDrawingDocument.m_oDocumentRenderer) {
-      if (window["AscDesktopEditor"]["IsSupportNativePrint"](this.DocumentUrl) === true) {
-        window["AscDesktopEditor"]["Print"]();
-        return;
-      }
-    }
-    else {
-      window["AscDesktopEditor"]["Print"]();
-      return;
-    }
+  if (window["AscDesktopEditor"] && this._printDesktop(options)) {
+    return;
+  }
+  if (this.isLongAction()) {
+    return;
   }
 
-  if (!this.isViewMode && me.nuclearis_mode == 'edit') {
+  if (!this.isViewMode) {
     this.nuclearis_addWatermark();
   }
 
-  this._print(Asc.c_oAscAsyncAction.Print, bIsDownloadEvent ? AscCommon.DownloadType.Print : AscCommon.DownloadType.None);
+  if (!options) {
+    options = new Asc.asc_CDownloadOptions();
+  }
+  options.fileType = Asc.c_oAscFileType.PDF;
+  options.isPdfPrint = true;
+  this.downloadAs(Asc.c_oAscAsyncAction.Print, options);
 };
 
 Asc['asc_docs_api'].prototype.nuclearis_addWatermark = function () {
@@ -157,9 +148,8 @@ Asc['asc_docs_api'].prototype.nuclearis_addWatermark = function () {
     ]\
     }";
 
-  this.watermarkDraw = new AscCommon.CWatermarkOnDraw(NUCLEARIS_WATERMARK_STRING);
-  this.watermarkDraw.Generate();
-  this.watermarkDraw.StartRenderer();
+  this.watermarkDraw = new AscCommon.CWatermarkOnDraw(NUCLEARIS_WATERMARK_STRING, this);
+  this.watermarkDraw.checkOnReady();
 }
 
 Asc['asc_docs_api'].prototype.nuclearis_removeWatermark = function () {
@@ -744,7 +734,7 @@ Asc['asc_docs_api'].prototype.nuclearis_insertSignature = function (data, signat
   var contentControls = logicDocument.GetAllContentControls();
   var oApi = this;
 
-  logicDocument.Create_NewHistoryPoint(AscDFH.historydescription_Document_InsertSignatureLine);
+  logicDocument.Create_NewHistoryPoint();
 
   var assinaturaContentControl = contentControls.find((control) => control.GetContentControlPr().Tag == "ASSINATURAS");
 
@@ -753,8 +743,8 @@ Asc['asc_docs_api'].prototype.nuclearis_insertSignature = function (data, signat
     var type = c_oAscSdtLevelType.Block; //Block
 
     var _content_control_pr = new AscCommon.CContentControlPr();
-    _content_control_pr['Tag'] = "ASSINATURAS";
-    _content_control_pr['Lock'] = 3;
+    _content_control_pr.Tag = "ASSINATURAS";
+    _content_control_pr.Lock = 3;
 
     var _obj = oApi.asc_AddContentControl(type, _content_control_pr);
     if (!_obj)
