@@ -41,59 +41,8 @@ Asc['asc_docs_api'].prototype.nuclearis_redoSignatures = function () {
   });
 };
 
-Asc['asc_docs_api'].prototype.nuclearis_InsertText = function (sText) {
-  var me = this;
-
-  var logicDocument = me.WordControl.m_oLogicDocument;
-  var paraRun = logicDocument.Get_DocumentPositionInfoForCollaborative();
-  paraRun.Class.AddText(sText, paraRun.Class.Content.length);
-  paraRun.Class.MoveCursorToEndPos(false);
-
-  //var oDocument = me.GetDocument();
-
-  //var oParagraph, oRun;
-  //oParagraph = logicDocument.GetCurrentParagraph();
-  //oParagraph = me.CreateParagraph();
-  //var oRun = me.CreateRun();
-  //oRun.AddText(sText);
-  //oParagraph.AddElement(oRun);
-  //var result = oDocument.InsertContent([oParagraph], true);
-  //console.log(result);
-
-  me.asc_Recalculate();
-};
-
-Asc['asc_docs_api'].prototype.nuclearis_NewParagraph = function (sText) {
-  var me = this;
-  var oDocument = me.GetDocument();
-  var oParagraph = me.CreateParagraph();
-  var oRun = me.CreateRun();
-  oRun.AddText(sText);
-  oParagraph.AddElement(oRun);
-  var result = oDocument.InsertContent([oParagraph], true);
-
-  me.asc_Recalculate();
-};
-
-/*
- * TODO: REVIEW
-Asc['asc_docs_api'].prototype.nuclearis_AddLineBreak = function () {
-  var me = this;
-  if (false === this.WordControl.m_oLogicDocument.Document_Is_SelectionLocked(AscCommon.changestype_Paragraph_Content)) {
-    var Document = this.WordControl.m_oLogicDocument;
-
-    if (null === Document.IsCursorInHyperlink(false)) {
-      Document.Create_NewHistoryPoint();
-      Document.AddToParagraph(new ParaNewLine(para_NewLine));
-    }
-  }
-};
-*/
-
 //Override asc_Print
 Asc['asc_docs_api'].prototype.asc_Print = function (options) {
-  var me = this;
-
   if (window["AscDesktopEditor"] && this._printDesktop(options)) {
     return;
   }
@@ -367,219 +316,6 @@ Asc['asc_docs_api'].prototype.nuclearis_toCamelCase = function (str) {
 Asc['asc_docs_api'].prototype.nuclearis_recalculate = function () {
   this.asc_Recalculate();
 }
-
-Asc['asc_docs_api'].prototype.nuclearis_initVoiceRecognition = function (_keyReplaces) {
-  this.vr_keyReplaces = _keyReplaces;
-  this.vr_first = true;
-  this.vr_paraRunInitialPosition = 0;
-  this.vr_paraRunFinalPosition = 0;
-  this.vr_lastNewLine = true;
-}
-
-Asc['asc_docs_api'].prototype.nuclearis_replaceAll = function (str, token, newtoken) {
-  while (str.indexOf(token) != -1)
-    str = str.replace(token, newtoken);
-
-  return str;
-}
-
-Asc['asc_docs_api'].prototype.nuclearis_writeTranscriptedText = function (event) {
-  //console.log("Result Recognition", event);
-
-  History.Create_NewPoint();
-
-  var logicalDocument = this.WordControl.m_oLogicDocument;
-  var paraRun = logicalDocument.Get_DocumentPositionInfoForCollaborative();
-
-  if (paraRun.Class.Selection != null && paraRun.Class.IsSelectionUse()) {
-    var startPos = Math.min(paraRun.Class.Selection.StartPos, paraRun.Class.Selection.EndPos);
-    var endPos = Math.max(paraRun.Class.Selection.StartPos, paraRun.Class.Selection.EndPos);
-    paraRun.Class.Remove_FromContent(startPos, (endPos - startPos), false);
-    paraRun.Position = startPos;
-    paraRun.Class.SetCursorPosition(startPos);
-    paraRun.Class.RemoveSelection();
-    logicalDocument.Recalculate();
-  }
-
-  var texto = "";
-  var textoTemp = "";
-
-  if (event["results"] === undefined) return;
-
-  for (var i = event["resultIndex"]; i < event["results"].length; ++i) {
-    console.log(event["results"][i][0]["transcript"]);
-
-    if (event["results"][i]["isFinal"]) {
-      texto += event["results"][i][0]["transcript"];
-      texto = this.nuclearis_replaceAll(texto, "\n", "nova linha");
-      this.vr_keyReplaces.forEach(function (item) {
-        texto = texto.replace(item.key, item.value);
-      });
-    }
-    else {
-      if (this.vr_first) {
-        this.sendEvent("nuclearis_onChangeVoiceRegStatus", "OUVINDO");
-
-        this.vr_first = false;
-        this.vr_paraRunInitialPosition = paraRun.Position;
-        this.vr_paraRunFinalPosition = this.vr_paraRunInitialPosition;
-      }
-
-      textoTemp += event["results"][i][0]["transcript"];
-      textoTemp = this.nuclearis_replaceAll(textoTemp, "\n", "nova linha");
-      if ((this.vr_paraRunFinalPosition - this.vr_paraRunInitialPosition) > 0) {
-        paraRun.Class.Remove_FromContent(this.vr_paraRunInitialPosition, (this.vr_paraRunFinalPosition - this.vr_paraRunInitialPosition), true);
-      }
-
-      if (paraRun.Class.IsCursorAtEnd()) {
-        paraRun.Class.AddText(textoTemp);
-        paraRun.Class.MoveCursorToEndPos(false);
-      }
-      else {
-        paraRun.Class.AddText(textoTemp, this.vr_paraRunInitialPosition);
-      }
-
-      this.vr_paraRunFinalPosition = this.vr_paraRunInitialPosition + textoTemp.length;
-
-      logicalDocument.Recalculate();
-    }
-  }
-
-  if (!texto) return;
-
-  this.sendEvent("nuclearis_onChangeVoiceRegStatus", "ATIVADO");
-
-  if (this.vr_lastNewLine) {
-    if (texto.substring(0, 1) === " ")
-      texto = texto.substring(1, texto.length);
-  }
-
-  var pontoNewText = "";
-  var pontoSplit = texto.split(".");
-  if (pontoSplit.length > 2) {
-    for (var i = 0; i < pontoSplit.length; i++) {
-      var text = pontoSplit[i];
-
-      if (i === 0)
-        pontoNewText = text;
-      else if (text[0] === ' ' && text[0] !== undefined)
-        text = '. ' + text[1].toUpperCase() + text.substring(2, text.length).toString();
-      else if (text[0] !== ' ' && text[0] !== undefined)
-        text = '.' + text[0].toUpperCase() + text.substring(1, text.length).toString();
-
-      if (i > 0)
-        pontoNewText += text;
-    }
-
-    texto = pontoNewText;
-  }
-
-  var textoArray = texto.split("{$}");
-  paraRun.Class.Remove_FromContent(this.vr_paraRunInitialPosition, (this.vr_paraRunFinalPosition - this.vr_paraRunInitialPosition), true);
-  for (var i = 0; i < textoArray.length; i++) {
-    var param = textoArray[i];
-    if (param === "paragraph") {
-      logicalDocument.AddNewParagraph(true, true);
-      paraRun = logicalDocument.Get_DocumentPositionInfoForCollaborative();
-      // this.vr_paraRunInitialPosition = paraRun.Position;
-      // this.vr_paraRunFinalPosition = this.vr_paraRunInitialPosition;
-    }
-    else if (param === "newLine") {
-      this.nuclearis_AddLineBreak();
-      paraRun = logicalDocument.Get_DocumentPositionInfoForCollaborative();
-    }
-    else {
-      if (param.length > 0) {
-        if (paraRun.Class.IsCursorAtEnd()) {
-          paraRun.Class.AddText(param);
-          paraRun.Class.MoveCursorToEndPos(false);
-        } else {
-          paraRun.Class.AddText(param, this.vr_paraRunInitialPosition);
-        }
-      }
-
-      //Retira o espaço em branco do Inicio do Paragrafo
-      if (paraRun.Class.Content.length > 0 && paraRun.Class.Content[0].Type == AscCommonWord.ParaSpace.prototype.Get_Type()) {
-        paraRun.Class.Remove_FromContent(0, 1, false);
-        this.vr_paraRunFinalPosition--;
-        //paraRun.Class.MoveCursorToEndPos(false);
-        paraRun.Class.SetCursorPosition(this.vr_paraRunFinalPosition);
-      }
-
-      //Altera primeira letra do período para maiusculo
-      if (paraRun.Class.Is_UseInParagraph() && paraRun.Class.Content.length > 0) {
-        var contentPos = paraRun.Class.GetPosInParent();
-        if (contentPos == 0) {
-          if (paraRun.Class.Content[0].Type == AscCommonWord.ParaText.prototype.Get_Type()) {
-            var letter = String.fromCharCode(paraRun.Class.Content[0].Value);
-            paraRun.Class.Remove_FromContent(0, 1, false);
-            paraRun.Class.AddText(letter.toUpperCase(), 0);
-            //paraRun.Class.MoveCursorToEndPos(false);
-          }
-        }
-
-        for (var p = paraRun.Class.GetElementsCount() - 1; p >= 0; p--) {
-          if (paraRun.Class.Content[p].Type == AscCommonWord.ParaText.prototype.Get_Type()) {
-            var letter = String.fromCharCode(paraRun.Class.Content[p].Value);
-            if (letter == '.') {
-              var a = p + 1;
-              while (a < paraRun.Class.GetElementsCount() &&
-                paraRun.Class.Content[a].Type == AscCommonWord.ParaSpace.prototype.Get_Type()) {
-                a++;
-              }
-
-              if (a < paraRun.Class.GetElementsCount()) {
-                if (paraRun.Class.Content[a].Type == AscCommonWord.ParaText.prototype.Get_Type()) {
-                  var afterLetter = String.fromCharCode(paraRun.Class.Content[a].Value);
-                  paraRun.Class.Remove_FromContent(a, 1, false);
-                  paraRun.Class.AddText(afterLetter.toUpperCase(), a);
-                  //paraRun.Class.MoveCursorToEndPos(false);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-    logicalDocument.Recalculate();
-  }
-
-  this.CheckChangedDocument();
-
-  this.vr_first = true;
-
-  if (textoArray[textoArray.length - 1] === "" && textoArray[textoArray.length - 2] === "newLine")
-    this.vr_lastNewLine = true;
-  else
-    this.vr_lastNewLine = false;
-
-}
-
-Asc['asc_docs_api'].prototype.nuclearis_getSelectedText = function (bCleartText) {
-  this.WordControl.m_oLogicDocument.GetSelectedText(bCleartText)
-}
-
-Asc['asc_docs_api'].prototype.nuclearis_documentInsertWatermark = function (sText, bIsDiagonal) {
-  this.GetDocument().InsertWatermark(sText, bIsDiagonal);
-  this.asc_Recalculate();
-}
-
-Asc['asc_docs_api'].prototype.nuclearis_documentRemoveWatermark = function (sText) {
-  this.GetDocument().RemoveWatermark(sText);
-  this.asc_Recalculate();
-}
-
-Asc['asc_docs_api'].prototype.nuclearis_convertCoordsToCursorWR = function () {
-  var curPosXY = this.WordControl.m_oLogicDocument.GetCurPosXY();
-  var PageIndex = this.WordControl.m_oLogicDocument.Controller.GetCurPage();
-  return this.WordControl.m_oDrawingDocument.ConvertCoordsToCursorWR(curPosXY.X, curPosXY.Y, PageIndex);
-}
-
-Asc['asc_docs_api'].prototype.nuclearis_getDocumentPositionInfoForCollaborative = function () {
-  return this.WordControl.m_oLogicDocument.Get_DocumentPositionInfoForCollaborative();
-}
-
 
 Asc['asc_docs_api'].prototype.nuclearis_uploadAndInsertImage = function (file, width, height, wrappingStyle, callback) {
   var oApi = this;
@@ -865,9 +601,6 @@ Asc['asc_docs_api'].prototype.nuclearis_insertSignatureBlock = function (oParagr
   if (data.image && data.image !== null && data.image !== '') {
     oAssinatura = this.CreateImage(data.image, imageWidth, imageHeight);
     oAssinatura.SetWrappingStyle('inline');
-    //oAssinatura.SetHorAlign("column", "center");
-    //oAssinatura.SetVerAlign("line", "top");
-    //oAssinatura.Drawing.Set_AllowOverlap(false);
     oParagraph.AddDrawing(oAssinatura);
     oParagraph.SetJc('center');
   }
@@ -906,91 +639,7 @@ Asc['asc_docs_api'].prototype.nuclearis_insertSignatureBlock = function (oParagr
   return oParagraph;
 }
 
-
-Asc['asc_docs_api'].prototype.isHTML = function (str) {
-  var doc = new DOMParser().parseFromString(str, "text/html");
-  return Array.from(doc.body.childNodes).some(node => node.nodeType === 1);
-}
-
-Asc['asc_docs_api'].prototype.nuclearis_replaceShortcut = function (shortcut, shortcut_value, _buffer, _itensBuffer) {
-  var paraRun = this.nuclearis_getDocumentPositionInfoForCollaborative();
-
-  if (_buffer.startPos < paraRun.Position && _buffer.endPos < paraRun.Position) {
-    paraRun.Class.Selection.Use = true;
-    paraRun.Class.Selection.Start = false;
-    paraRun.Class.Selection.Flag = AscCommon.selectionflag_Common;
-
-    paraRun.Class.Selection.StartPos = _buffer.startPos;
-    paraRun.Class.Selection.EndPos = _buffer.endPos;
-
-    //var selectedText = Doc.GetSelectedText();
-
-    this.WordControl.m_oLogicDocument.Create_NewHistoryPoint();
-
-    paraRun.Class.Remove_FromContent(_buffer.startPos, shortcut.length, true);
-    paraRun.Class.AddText(shortcut_value, _buffer.startPos);
-    paraRun.Class.Paragraph.Document_SetThisElementCurrent(true);
-    paraRun.Class.MoveCursorToEndPos(false);
-    //paraRun.Class.State.ContentPos = (_buffer.startPos + shortcut_value.length + 1);
-
-    paraRun.Class.RemoveSelection();
-
-    this.WordControl.m_oLogicDocument.Recalculate();
-
-    _itensBuffer = [];
-  }
-};
-
-Asc['asc_docs_api'].prototype.nuclearis_searchShortcut = function (buffer, atalhos, itensBuffer, renderMenu, currentValueAutocompleteShortcut) {
-  if (renderMenu) {
-    var paraRun = this.nuclearis_getDocumentPositionInfoForCollaborative();
-
-    if (paraRun != null && paraRun.Class.Content && paraRun.Position >= 1) {
-      var pos = paraRun.Position - 1;
-
-      if (paraRun.Class.Content[pos].Type == AscCommonWord.ParaSpace.prototype.Get_Type()) {
-        if (currentValueAutocompleteShortcut === 0) {
-          if (atalhos[buffer.text] !== undefined) {
-            this.nuclearis_replaceShortcut(buffer.text, atalhos[buffer.text], buffer, itensBuffer);
-          }
-        }
-        buffer.startPos = null;
-        buffer.endPos = null;
-        buffer.text = '';
-      }
-      else {
-        buffer.endPos = pos;
-        buffer.text = '';
-        while (pos >= 0 && paraRun.Class.Content[pos].Type != null
-          && paraRun.Class.Content[pos].Type == AscCommonWord.ParaText.prototype.Get_Type()) {
-          buffer.text = String.fromCharCode(paraRun.Class.Content[pos].Value) + buffer.text;
-          buffer.startPos = pos;
-          pos--;
-        }
-
-        if (buffer.text.length > 1) {
-          var itens = [];
-          for (var key in atalhos) {
-            if (key.startsWith(buffer.text)) {
-              itens.push(key);
-            }
-          }
-
-          this.sendEvent("nuclearis_onShortcutsFounded", itens);
-        }
-      }
-    }
-  }
-};
-
-Asc['asc_docs_api'].prototype.nuclearis_emulateKeyDownApi = function (key) {
-  AscCommon.g_inputContext.emulateKeyDownApi(key);
-}
-
 Asc['asc_docs_api'].prototype["nuclearis_redoSignatures"] = Asc['asc_docs_api'].prototype.nuclearis_redoSignatures;
-Asc['asc_docs_api'].prototype["nuclearis_InsertText"] = Asc['asc_docs_api'].prototype.nuclearis_InsertText;
-Asc['asc_docs_api'].prototype["nuclearis_NewParagraph"] = Asc['asc_docs_api'].prototype.nuclearis_NewParagraph;
-Asc['asc_docs_api'].prototype["nuclearis_AddLineBreak"] = Asc['asc_docs_api'].prototype.nuclearis_AddLineBreak;
 Asc['asc_docs_api'].prototype["nuclearis_addWatermark"] = Asc['asc_docs_api'].prototype.nuclearis_addWatermark;
 Asc['asc_docs_api'].prototype["nuclearis_removeWatermark"] = Asc['asc_docs_api'].prototype.nuclearis_removeWatermark;
 Asc['asc_docs_api'].prototype["nuclearis_registerCallbacks"] = Asc['asc_docs_api'].prototype.nuclearis_registerCallbacks;
@@ -998,20 +647,9 @@ Asc['asc_docs_api'].prototype["asc_Print"] = Asc['asc_docs_api'].prototype.asc_P
 Asc['asc_docs_api'].prototype["nuclearis_replaceContentControls"] = Asc['asc_docs_api'].prototype.nuclearis_replaceContentControls;
 Asc['asc_docs_api'].prototype["nuclearis_toCamelCase"] = Asc['asc_docs_api'].prototype.nuclearis_toCamelCase;
 Asc['asc_docs_api'].prototype["nuclearis_recalculate"] = Asc['asc_docs_api'].prototype.nuclearis_recalculate;
-Asc['asc_docs_api'].prototype["nuclearis_initVoiceRecognition"] = Asc['asc_docs_api'].prototype.nuclearis_initVoiceRecognition;
-Asc['asc_docs_api'].prototype["nuclearis_writeTranscriptedText"] = Asc['asc_docs_api'].prototype.nuclearis_writeTranscriptedText;
-Asc['asc_docs_api'].prototype["nuclearis_getSelectedText"] = Asc['asc_docs_api'].prototype.nuclearis_getSelectedText;
-Asc['asc_docs_api'].prototype["nuclearis_documentInsertWatermark"] = Asc['asc_docs_api'].prototype.nuclearis_documentInsertWatermark;
-Asc['asc_docs_api'].prototype["nuclearis_documentRemoveWatermark"] = Asc['asc_docs_api'].prototype.nuclearis_documentRemoveWatermark;
-Asc['asc_docs_api'].prototype["nuclearis_convertCoordsToCursorWR"] = Asc['asc_docs_api'].prototype.nuclearis_convertCoordsToCursorWR;
-Asc['asc_docs_api'].prototype["nuclearis_getDocumentPositionInfoForCollaborative"] = Asc['asc_docs_api'].prototype.nuclearis_getDocumentPositionInfoForCollaborative;
 Asc['asc_docs_api'].prototype["nuclearis_uploadAndInsertImage"] = Asc['asc_docs_api'].prototype.nuclearis_uploadAndInsertImage;
 Asc['asc_docs_api'].prototype["nuclearis_removeMeasurementHyperlink"] = Asc['asc_docs_api'].prototype.nuclearis_removeMeasurementHyperlink;
 Asc['asc_docs_api'].prototype["nuclearis_uploadAndInsertSignatureImage"] = Asc['asc_docs_api'].prototype.nuclearis_uploadAndInsertSignatureImage;
 Asc['asc_docs_api'].prototype["nuclearis_uploadImageFiles"] = Asc['asc_docs_api'].prototype.nuclearis_uploadImageFiles;
 Asc['asc_docs_api'].prototype["nuclearis_insertSignature"] = Asc['asc_docs_api'].prototype.nuclearis_insertSignature;
-Asc['asc_docs_api'].prototype["nuclearis_replaceShortcut"] = Asc['asc_docs_api'].prototype.nuclearis_replaceShortcut;
-Asc['asc_docs_api'].prototype["nuclearis_searchShortcut"] = Asc['asc_docs_api'].prototype.nuclearis_searchShortcut;
-Asc['asc_docs_api'].prototype["nuclearis_emulateKeyDownApi"] = Asc['asc_docs_api'].prototype.nuclearis_emulateKeyDownApi;
-Asc['asc_docs_api'].prototype["nuclearis_setMode"] = Asc['asc_docs_api'].prototype.nuclearis_setMode;
 Asc['asc_docs_api'].prototype["nuclearis_recalcTableCellWidth"] = Asc['asc_docs_api'].prototype.nuclearis_recalcTableCellWidth;
