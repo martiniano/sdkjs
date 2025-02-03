@@ -1402,8 +1402,10 @@
 		}, true);
 
 		// send focus
+    /*
 		if (!api.isMobileVersion && !api.isEmbedVersion)
 			focusHtmlElement(window['AscCommon'].g_inputContext.HtmlArea);
+    */
 	};
 
 	function focusHtmlElement(element)
