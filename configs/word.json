@@ -423,8 +423,7 @@
 			"common/Native/native_graphics.js",
 						
 			"vendor/easysax.js",
-			"common/openxml.js",
-      "word/custom/nuclearis.js"
+			"common/openxml.js"
 		],
 		"desktop": {
 			"min": [
